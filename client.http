@@ -12,3 +12,14 @@ Content-Type: application/json
 	"password": "123456",
     "passwordConfirmation": "123456"
 }
+
+###
+
+# @name authenticate
+POST {{baseUrl}}/sellers/sessions
+Content-Type: application/json
+
+{
+	"email": "teste1@teste.com.br",
+	"password": "123456"
+}
