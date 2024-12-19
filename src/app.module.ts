@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module'
 import { AuthenticateController } from './controllers/authenticate.controller'
 import { CreateProductController } from './controllers/create-product.controller'
 import { CreateCategoryController } from './controllers/create-category.controller'
+import { FetchRecentQuestionsController } from './controllers/fetch-categories.controller'
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CreateCategoryController } from './controllers/create-category.controll
     AuthenticateController,
     CreateCategoryController,
     CreateProductController,
+    FetchRecentQuestionsController,
   ],
   providers: [PrismaService],
 })

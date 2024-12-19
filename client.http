@@ -38,6 +38,13 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name fetch_categories
+GET {{baseUrl}}/categories
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
 # @name create_product
 POST {{baseUrl}}/products
 Content-Type: application/json
