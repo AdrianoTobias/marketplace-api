@@ -52,7 +52,7 @@ Authorization: Bearer {{authToken}}
 
 {
   "title": "Product 1",
-  "description": "A detailed product description",
+  "description": "A detailed product 1 description",
   "priceInCents": 1999,
   "categoryId": "0d5e54b4-ac6d-47e6-957b-3e12af76bc34",
   "attachmentsIds": [
@@ -60,3 +60,10 @@ Authorization: Bearer {{authToken}}
     "0af7df5a-0616-4d75-9ffa-d44711ae6b69"
   ]
 }
+
+###
+
+# @name fetch_recent_products
+GET {{baseUrl}}/products?page=1&search=3&status=available
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
