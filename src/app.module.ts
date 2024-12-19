@@ -6,6 +6,7 @@ import { envSchema } from './env'
 import { AuthModule } from './auth/auth.module'
 import { AuthenticateController } from './controllers/authenticate.controller'
 import { CreateProductController } from './controllers/create-product.controller'
+import { CreateCategoryController } from './controllers/create-category.controller'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CreateProductController } from './controllers/create-product.controller
   controllers: [
     CreateAccountController,
     AuthenticateController,
+    CreateCategoryController,
     CreateProductController,
   ],
   providers: [PrismaService],

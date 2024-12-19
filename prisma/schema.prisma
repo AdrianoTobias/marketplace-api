@@ -15,7 +15,8 @@ model User {
     password String
     avatarId String? @map("avatar_id")
 
-    avatar Attachment? @relation(fields: [avatarId], references: [id])
+    avatar   Attachment? @relation(fields: [avatarId], references: [id])
+    products Product[]   @relation(name: "product_owner")
 
     @@map("users")
 }
@@ -24,7 +25,35 @@ model Attachment {
     id   String @id @default(uuid())
     path String
 
-    users User[]
+    users    User[]
+    products Product[]
 
     @@map("attachments")
+}
+
+model Product {
+    id           String   @id @default(uuid())
+    title        String
+    description  String
+    priceInCents Int      @map("price_in_cents")
+    status       String
+    ownerId      String   @map("owner_id")
+    categoryId   String   @map("category_id")
+    createdAt    DateTime @default(now()) @map("created_at")
+
+    owner       User         @relation(name: "product_owner", fields: [ownerId], references: [id])
+    category    Category     @relation(fields: [categoryId], references: [id])
+    attachments Attachment[]
+
+    @@map("products")
+}
+
+model Category {
+    id    String @id @default(uuid())
+    title String
+    slug  String @unique
+
+    products Product[]
+
+    @@map("categories")
 }
