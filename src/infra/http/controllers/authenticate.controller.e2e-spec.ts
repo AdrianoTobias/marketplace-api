@@ -1,14 +1,13 @@
-import { AppModule } from '@/app.module'
-import { PrismaService } from '@/prisma/prisma.service'
+import { AppModule } from '@/infra/app.module'
+import { PrismaService } from '@/infra/prisma/prisma.service'
 import { INestApplication } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
+import { hash } from 'bcryptjs'
 import request from 'supertest'
 
-describe('Create Category (E2E)', () => {
+describe('Authenticate (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -18,39 +17,31 @@ describe('Create Category (E2E)', () => {
     app = moduleRef.createNestApplication()
 
     prisma = moduleRef.get(PrismaService)
-    jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
-  test('[POST] /categories', async () => {
-    const user = await prisma.user.create({
+  test('[POST] /sellers/sessions', async () => {
+    await prisma.user.create({
       data: {
         name: 'John Doe',
         phone: '123456789',
         email: 'johndoe@example.com',
         avatarId: null,
-        password: '123456',
+        password: await hash('123456', 8),
       },
     })
 
-    const accessToken = jwt.sign({ sub: user.id })
-
     const response = await request(app.getHttpServer())
-      .post('/categories')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .post('/sellers/sessions')
       .send({
-        title: 'Category 01',
+        email: 'johndoe@example.com',
+        password: '123456',
       })
 
     expect(response.statusCode).toBe(201)
-
-    const categoryOnDatabase = await prisma.category.findUnique({
-      where: {
-        slug: 'category-01',
-      },
+    expect(response.body).toEqual({
+      access_token: expect.any(String),
     })
-
-    expect(categoryOnDatabase).toBeTruthy()
   })
 })

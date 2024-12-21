@@ -1,11 +1,11 @@
-import { AppModule } from '@/app.module'
-import { PrismaService } from '@/prisma/prisma.service'
+import { AppModule } from '@/infra/app.module'
+import { PrismaService } from '@/infra/prisma/prisma.service'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 
-describe('Fetch categories (E2E)', () => {
+describe('Create Category (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let jwt: JwtService
@@ -23,7 +23,7 @@ describe('Fetch categories (E2E)', () => {
     await app.init()
   })
 
-  test('[GET] /categories', async () => {
+  test('[POST] /categories', async () => {
     const user = await prisma.user.create({
       data: {
         name: 'John Doe',
@@ -36,30 +36,21 @@ describe('Fetch categories (E2E)', () => {
 
     const accessToken = jwt.sign({ sub: user.id })
 
-    await prisma.category.createMany({
-      data: [
-        {
-          title: 'Category 01',
-          slug: 'category-01',
-        },
-        {
-          title: 'Category 02',
-          slug: 'category-02',
-        },
-      ],
+    const response = await request(app.getHttpServer())
+      .post('/categories')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        title: 'Category 01',
+      })
+
+    expect(response.statusCode).toBe(201)
+
+    const categoryOnDatabase = await prisma.category.findUnique({
+      where: {
+        slug: 'category-01',
+      },
     })
 
-    const response = await request(app.getHttpServer())
-      .get('/categories')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send()
-    console.log(response)
-    expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
-      categories: [
-        expect.objectContaining({ slug: 'category-01' }),
-        expect.objectContaining({ slug: 'category-02' }),
-      ],
-    })
+    expect(categoryOnDatabase).toBeTruthy()
   })
 })
