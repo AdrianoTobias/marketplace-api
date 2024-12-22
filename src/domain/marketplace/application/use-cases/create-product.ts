@@ -1,6 +1,8 @@
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { SellersRepository } from '../repositories/sellers-repository'
+import { CategoriesRepository } from '../repositories/categories-repository'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -15,7 +17,11 @@ interface CreateProductUseCaseResponse {
 }
 
 export class CreateProductUseCase {
-  constructor(private productsRepository: ProductsRepository) {}
+  constructor(
+    private sellersRepository: SellersRepository,
+    private productsRepository: ProductsRepository,
+    private categoriesRepository: CategoriesRepository,
+  ) {}
 
   async execute({
     title,
@@ -24,6 +30,18 @@ export class CreateProductUseCase {
     ownerId,
     categoryId,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
+    const seller = await this.sellersRepository.findById(ownerId)
+
+    if (!seller) {
+      throw new Error('Seller not found.')
+    }
+
+    const category = await this.categoriesRepository.findById(categoryId)
+
+    if (!category) {
+      throw new Error('Category not found.')
+    }
+
     const product = Product.create({
       title,
       description,
