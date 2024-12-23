@@ -6,6 +6,7 @@ import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-catego
 import { makeCategory } from 'test/factories/make-category'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { makeSeller } from 'test/factories/make-seller'
+import { ProductStatus } from '../../enterprise/entities/product'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -148,6 +149,34 @@ describe('Edit Product', () => {
       return sut.execute({
         productId: product.id.toValue(),
         ownerId: 'owner-2',
+        title: 'Produto editado',
+        description: 'Descriação editada',
+        priceInCents: 123,
+        categoryId: category.id.toValue(),
+      })
+    }).rejects.toBeInstanceOf(Error)
+  })
+
+  it('should not be able to edit a sold product', async () => {
+    const seller = makeSeller()
+
+    await inMemorySellersRepository.create(seller)
+
+    const product = makeProduct({
+      ownerId: seller.id,
+      status: ProductStatus.SOLD,
+    })
+
+    await inMemoryProductsRepository.create(product)
+
+    const category = makeCategory()
+
+    await inMemoryCategoriesRepository.create(category)
+
+    await expect(() => {
+      return sut.execute({
+        productId: product.id.toValue(),
+        ownerId: product.ownerId.toValue(),
         title: 'Produto editado',
         description: 'Descriação editada',
         priceInCents: 123,
