@@ -16,6 +16,7 @@ export interface ProductProps {
   ownerId: UniqueEntityID
   categoryId: UniqueEntityID
   createdAt: Date
+  statusAt: Date
 }
 
 export class Product extends Entity<ProductProps> {
@@ -49,6 +50,8 @@ export class Product extends Entity<ProductProps> {
 
   set status(status: ProductStatus) {
     this.props.status = status
+
+    this.props.statusAt = new Date()
   }
 
   get ownerId() {
@@ -67,8 +70,12 @@ export class Product extends Entity<ProductProps> {
     return this.props.createdAt
   }
 
+  get statusAt() {
+    return this.props.statusAt
+  }
+
   static create(
-    props: Optional<ProductProps, 'status' | 'createdAt'>,
+    props: Optional<ProductProps, 'status' | 'createdAt' | 'statusAt'>,
     id?: UniqueEntityID,
   ) {
     const product = new Product(
@@ -76,6 +83,7 @@ export class Product extends Entity<ProductProps> {
         ...props,
         createdAt: props.createdAt ?? new Date(),
         status: props.status ?? ProductStatus.AVAILABLE,
+        statusAt: props.statusAt ?? new Date(),
       },
       id,
     )

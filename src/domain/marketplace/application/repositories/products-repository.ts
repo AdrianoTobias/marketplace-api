@@ -1,6 +1,12 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Product } from '../../enterprise/entities/product'
 
+export interface Count {
+  sellerId: string
+  from?: Date
+  status?: Product['status']
+}
+
 export interface FindManyByOwner {
   ownerId: string
   search?: string
@@ -13,6 +19,7 @@ export interface FindMany extends PaginationParams {
 }
 
 export interface ProductsRepository {
+  count(params: Count): Promise<number>
   findById(id: string): Promise<Product | null>
   findManyByOwner(params: FindManyByOwner): Promise<Product[]>
   findMany(params: FindMany): Promise<Product[]>
