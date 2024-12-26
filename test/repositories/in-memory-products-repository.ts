@@ -5,6 +5,7 @@ import {
   ProductsRepository,
 } from '@/domain/marketplace/application/repositories/products-repository'
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
+import { normalizeDate } from 'test/utils/normalizeDate'
 
 export class InMemoryProductsRepository implements ProductsRepository {
   public items: Product[] = []
@@ -12,10 +13,10 @@ export class InMemoryProductsRepository implements ProductsRepository {
   async count({ sellerId, status, from }: Count) {
     let filteredProducts = this.items
 
-    const normalizedFrom = from ? this.normalizeDate(from) : null
+    const normalizedFrom = from ? normalizeDate(from) : null
 
     filteredProducts = filteredProducts.filter((product) => {
-      const productStatusAt = this.normalizeDate(product.statusAt)
+      const productStatusAt = normalizeDate(product.statusAt)
 
       return (
         product.ownerId.toString() === sellerId &&
@@ -97,12 +98,5 @@ export class InMemoryProductsRepository implements ProductsRepository {
 
   async create(product: Product) {
     this.items.push(product)
-  }
-
-  private normalizeDate(date: Date) {
-    const normalized = new Date(date)
-    normalized.setHours(0, 0, 0, 0)
-
-    return normalized
   }
 }

@@ -1,5 +1,4 @@
 import { ProductsRepository } from '../repositories/products-repository'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ViewersRepository } from '../repositories/viewers-repository'
 import { View } from '../../enterprise/entities/view'
 import { ViewsRepository } from '../repositories/views-repository'
@@ -41,8 +40,8 @@ export class RegisterProductViewUseCase {
     }
 
     const view = View.create({
-      productId: new UniqueEntityID(productId),
-      viewerId: new UniqueEntityID(viewerId),
+      product,
+      viewer,
     })
 
     const isViewed = await this.viewsRepository.isViewed(view)

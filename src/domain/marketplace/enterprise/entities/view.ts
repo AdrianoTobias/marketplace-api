@@ -1,20 +1,22 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
+import { Viewer } from './user/viewer'
+import { Product } from './product'
 
 export interface ViewProps {
-  viewerId: UniqueEntityID
-  productId: UniqueEntityID
+  viewer: Viewer
+  product: Product
   createdAt: Date
 }
 
 export class View extends Entity<ViewProps> {
-  get viewerId() {
-    return this.props.viewerId
+  get viewer() {
+    return this.props.viewer
   }
 
-  get productId() {
-    return this.props.productId
+  get product() {
+    return this.props.product
   }
 
   get createdAt() {

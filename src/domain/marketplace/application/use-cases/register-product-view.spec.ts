@@ -86,13 +86,13 @@ describe('Register Product View', () => {
     const viewer = makeViewer({}, new UniqueEntityID('user-2'))
     await inMemoryViewersRepository.create(viewer)
 
-    const view = makeView({ productId: product.id, viewerId: viewer.id })
+    const view = makeView({ product, viewer })
     await inMemoryViewsRepository.create(view)
 
     await expect(() => {
       return sut.execute({
-        productId: view.productId.toValue(),
-        viewerId: view.viewerId.toValue(),
+        productId: view.product.id.toValue(),
+        viewerId: view.viewer.id.toValue(),
       })
     }).rejects.toBeInstanceOf(Error)
   })
