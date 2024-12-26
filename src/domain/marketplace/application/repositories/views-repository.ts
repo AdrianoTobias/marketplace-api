@@ -2,6 +2,7 @@ import { View } from '../../enterprise/entities/view'
 
 export interface Count {
   sellerId: string
+  productId?: string
   from?: Date
 }
 
