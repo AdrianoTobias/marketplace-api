@@ -41,7 +41,9 @@ describe('Change Product status', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryProductsRepository.items[0]).toEqual(result.value?.product)
+    expect(result.value).toMatchObject({
+      product: expect.objectContaining(product),
+    })
   })
 
   it('should not be able to change a product status from a non-existent user', async () => {

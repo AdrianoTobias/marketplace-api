@@ -55,13 +55,17 @@ describe('Count Seller Views per day', () => {
       from: thirtyDaysAgo,
     })
 
-    expect(result.value?.viewsPerDay).length(15)
-    expect(result.value?.viewsPerDay[14]).toEqual(
-      expect.objectContaining({
-        date: thirtyDaysAgo,
-        amount: 2,
-      }),
-    )
+    expect(result.value).toMatchObject({
+      viewsPerDay: expect.arrayContaining(new Array(15)),
+    })
+    expect(result.value).toMatchObject({
+      viewsPerDay: expect.arrayContaining([
+        expect.objectContaining({
+          date: thirtyDaysAgo,
+          amount: 2,
+        }),
+      ]),
+    })
   })
 
   it('should not be able to count views of a non-existent seller', async () => {

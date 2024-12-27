@@ -22,7 +22,11 @@ describe('Get Product by id', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.product.id).toBeTruthy()
-    expect(result.value?.product.title).toEqual(newProduct.title)
+    expect(result.value).toMatchObject({
+      product: expect.objectContaining({
+        id: newProduct.id,
+        title: newProduct.title,
+      }),
+    })
   })
 })

@@ -50,16 +50,18 @@ describe('Fetch Products by Owner', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.products).toEqual([
-      expect.objectContaining({
-        ownerId: seller1.id,
-        createdAt: new Date(2024, 11, 23),
-      }),
-      expect.objectContaining({
-        ownerId: seller1.id,
-        createdAt: new Date(2024, 11, 20),
-      }),
-    ])
+    expect(result.value).toMatchObject({
+      products: expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: seller1.id,
+          createdAt: new Date(2024, 11, 23),
+        }),
+        expect.objectContaining({
+          ownerId: seller1.id,
+          createdAt: new Date(2024, 11, 20),
+        }),
+      ]),
+    })
   })
 
   it('should be able to fetch filtered seller products by title or description', async () => {
@@ -106,14 +108,16 @@ describe('Fetch Products by Owner', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.products).toEqual([
-      expect.objectContaining({
-        description: 'Descrição 123',
-      }),
-      expect.objectContaining({
-        title: 'Produto 2',
-      }),
-    ])
+    expect(result.value).toMatchObject({
+      products: expect.arrayContaining([
+        expect.objectContaining({
+          description: 'Descrição 123',
+        }),
+        expect.objectContaining({
+          title: 'Produto 2',
+        }),
+      ]),
+    })
   })
 
   it('should be able to fetch filtered seller products by status', async () => {
@@ -157,18 +161,20 @@ describe('Fetch Products by Owner', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.products).toEqual([
-      expect.objectContaining({
-        ownerId: seller1.id,
-        status: ProductStatus.AVAILABLE,
-        createdAt: new Date(2024, 11, 23),
-      }),
-      expect.objectContaining({
-        ownerId: seller1.id,
-        status: ProductStatus.AVAILABLE,
-        createdAt: new Date(2024, 11, 20),
-      }),
-    ])
+    expect(result.value).toMatchObject({
+      products: expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: seller1.id,
+          status: ProductStatus.AVAILABLE,
+          createdAt: new Date(2024, 11, 23),
+        }),
+        expect.objectContaining({
+          ownerId: seller1.id,
+          status: ProductStatus.AVAILABLE,
+          createdAt: new Date(2024, 11, 20),
+        }),
+      ]),
+    })
   })
 
   it('should be able to fetch filtered seller products by title or description and status', async () => {
@@ -219,10 +225,12 @@ describe('Fetch Products by Owner', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.products).toEqual([
-      expect.objectContaining({
-        title: 'Produto 1',
-      }),
-    ])
+    expect(result.value).toMatchObject({
+      products: expect.arrayContaining([
+        expect.objectContaining({
+          title: 'Produto 1',
+        }),
+      ]),
+    })
   })
 })

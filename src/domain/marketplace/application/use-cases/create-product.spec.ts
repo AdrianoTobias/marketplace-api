@@ -53,10 +53,12 @@ describe('Create Product', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.product.id).toBeTruthy()
-    expect(inMemoryProductsRepository.items[0].id).toEqual(
-      result.value?.product.id,
-    )
+    expect(result.value).toMatchObject({
+      product: expect.objectContaining({
+        id: inMemoryProductsRepository.items[0].id,
+      }),
+    })
+
     expect(
       inMemoryProductsRepository.items[0].attachments.currentItems,
     ).toHaveLength(2)

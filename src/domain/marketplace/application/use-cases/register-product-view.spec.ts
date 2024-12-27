@@ -39,8 +39,11 @@ describe('Register Product View', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.view.id).toBeTruthy()
-    expect(inMemoryViewsRepository.items[0].id).toEqual(result.value?.view.id)
+    expect(result.value).toMatchObject({
+      view: expect.objectContaining({
+        id: inMemoryViewsRepository.items[0].id,
+      }),
+    })
   })
 
   it('should not be able to register a view on a non-existent product', async () => {

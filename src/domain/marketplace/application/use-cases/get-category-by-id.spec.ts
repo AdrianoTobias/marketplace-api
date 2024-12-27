@@ -22,7 +22,11 @@ describe('Get Category by id', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.category.id).toBeTruthy()
-    expect(result.value?.category.title).toEqual(newCategory.title)
+    expect(result.value).toMatchObject({
+      category: expect.objectContaining({
+        id: newCategory.id,
+        title: newCategory.title,
+      }),
+    })
   })
 })

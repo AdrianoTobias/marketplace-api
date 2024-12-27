@@ -47,7 +47,9 @@ describe('Count Seller Views', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.amount).toEqual(15)
+    expect(result.value).toMatchObject({
+      amount: 15,
+    })
   })
 
   it('should not be able to count views of a non-existent seller', async () => {

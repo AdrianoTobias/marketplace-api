@@ -47,7 +47,9 @@ describe('Count Seller Products', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.amount).toEqual(15)
+    expect(result.value).toMatchObject({
+      amount: 15,
+    })
   })
 
   it('should be able to count the amount of available products in the last 30 days', async () => {
@@ -77,7 +79,9 @@ describe('Count Seller Products', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.amount).toEqual(15)
+    expect(result.value).toMatchObject({
+      amount: 15,
+    })
   })
 
   it('should not be able to count products of a non-existent seller', async () => {
