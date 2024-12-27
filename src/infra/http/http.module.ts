@@ -6,7 +6,7 @@ import { CreateCategoryController } from './controllers/create-category.controll
 import { CreateProductController } from './controllers/create-product.controller'
 import { FetchRecentQuestionsController } from './controllers/fetch-categories.controller'
 import { FetchRecentProductsController } from './controllers/fetch-recent-products.controller'
-import { PrismaService } from '../prisma/prisma.service'
+import { PrismaService } from '../database/prisma/prisma.service'
 
 @Module({
   controllers: [
