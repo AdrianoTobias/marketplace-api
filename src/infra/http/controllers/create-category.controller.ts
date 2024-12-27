@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { z } from 'zod'
+import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
 
 const createCategoryBodySchema = z.object({
   title: z.string(),
@@ -15,28 +15,14 @@ type CreateCategoryBodySchema = z.infer<typeof createCategoryBodySchema>
 @Controller('/categories')
 @UseGuards(JwtAuthGuard)
 export class CreateCategoryController {
-  constructor(private prisma: PrismaService) {}
+  constructor(private createCategory: CreateCategoryUseCase) {}
 
   @Post()
   async handle(@Body(bodyValidationPipe) body: CreateCategoryBodySchema) {
     const { title } = body
 
-    const slug = this.convertToSlug(title)
-
-    await this.prisma.category.create({
-      data: {
-        title,
-        slug,
-      },
+    await this.createCategory.execute({
+      title,
     })
-  }
-
-  private convertToSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
   }
 }

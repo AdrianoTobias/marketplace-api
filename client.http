@@ -33,7 +33,7 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "title": "Category 1"
+  "title": "Category 2"
 }
 
 ###

@@ -1,7 +1,7 @@
 import { Category } from '../../enterprise/entities/category'
 
-export interface CategoriesRepository {
-  findById(id: string): Promise<Category | null>
-  listAll(): Promise<Category[]>
-  create(category: Category): Promise<void>
+export abstract class CategoriesRepository {
+  abstract findById(id: string): Promise<Category | null>
+  abstract listAll(): Promise<Category[]>
+  abstract create(category: Category): Promise<void>
 }

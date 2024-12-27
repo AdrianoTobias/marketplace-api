@@ -7,12 +7,16 @@ import { PrismaProductsRepository } from './prisma/repositories/prisma-products-
 import { PrismaSellersRepository } from './prisma/repositories/prisma-sellers-repository'
 import { PrismaViewersRepository } from './prisma/repositories/prisma-viewers-repository'
 import { PrismaViewsRepository } from './prisma/repositories/prisma-views-repository'
+import { CategoriesRepository } from '@/domain/marketplace/application/repositories/categories-repository'
 
 @Module({
   providers: [
     PrismaService,
     PrismaAttachmentsRepository,
-    PrismaCategoriesRepository,
+    {
+      provide: CategoriesRepository,
+      useClass: PrismaCategoriesRepository,
+    },
     PrismaProductAttachmentsRepository,
     PrismaProductsRepository,
     PrismaSellersRepository,
@@ -22,7 +26,7 @@ import { PrismaViewsRepository } from './prisma/repositories/prisma-views-reposi
   exports: [
     PrismaService,
     PrismaAttachmentsRepository,
-    PrismaCategoriesRepository,
+    CategoriesRepository,
     PrismaProductAttachmentsRepository,
     PrismaProductsRepository,
     PrismaSellersRepository,

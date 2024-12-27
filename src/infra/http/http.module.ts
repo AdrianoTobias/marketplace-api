@@ -6,9 +6,11 @@ import { CreateCategoryController } from './controllers/create-category.controll
 import { CreateProductController } from './controllers/create-product.controller'
 import { FetchRecentQuestionsController } from './controllers/fetch-categories.controller'
 import { FetchRecentProductsController } from './controllers/fetch-recent-products.controller'
-import { PrismaService } from '../database/prisma/prisma.service'
+import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
+import { DatabaseModule } from '../database/database-module'
 
 @Module({
+  imports: [DatabaseModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
@@ -17,6 +19,6 @@ import { PrismaService } from '../database/prisma/prisma.service'
     FetchRecentQuestionsController,
     FetchRecentProductsController,
   ],
-  providers: [PrismaService],
+  providers: [CreateCategoryUseCase],
 })
 export class httpModule {}
