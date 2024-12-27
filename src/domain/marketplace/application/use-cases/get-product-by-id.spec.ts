@@ -17,11 +17,12 @@ describe('Get Product by id', () => {
 
     await inMemoryProductsRepository.create(newProduct)
 
-    const { product } = await sut.execute({
+    const result = await sut.execute({
       id: 'product-1',
     })
 
-    expect(product.id).toBeTruthy()
-    expect(product.title).toEqual(newProduct.title)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.product.id).toBeTruthy()
+    expect(result.value?.product.title).toEqual(newProduct.title)
   })
 })

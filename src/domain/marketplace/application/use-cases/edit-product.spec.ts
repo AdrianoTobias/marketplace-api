@@ -7,6 +7,8 @@ import { makeCategory } from 'test/factories/make-category'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { makeSeller } from 'test/factories/make-seller'
 import { ProductStatus } from '../../enterprise/entities/product'
+import { NotAllowedError } from './errors/not-allowed-error'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -41,7 +43,7 @@ describe('Edit Product', () => {
 
     await inMemoryCategoriesRepository.create(category)
 
-    await sut.execute({
+    const result = await sut.execute({
       productId: product.id.toValue(),
       ownerId: product.ownerId.toValue(),
       title: 'Produto editado',
@@ -50,6 +52,7 @@ describe('Edit Product', () => {
       categoryId: category.id.toValue(),
     })
 
+    expect(result.isRight()).toBe(true)
     expect(inMemoryProductsRepository.items[0]).toMatchObject({
       title: 'Produto editado',
       description: 'Descriação editada',
@@ -68,16 +71,17 @@ describe('Edit Product', () => {
 
     await inMemoryCategoriesRepository.create(category)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: 'non-existent-user',
-        title: 'Produto editado',
-        description: 'Descriação editada',
-        priceInCents: 123,
-        categoryId: category.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: 'non-existent-user',
+      title: 'Produto editado',
+      description: 'Descriação editada',
+      priceInCents: 123,
+      categoryId: category.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to edit a product with a non-existent category', async () => {
@@ -91,16 +95,17 @@ describe('Edit Product', () => {
 
     await inMemoryProductsRepository.create(product)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: product.ownerId.toValue(),
-        title: 'Produto editado',
-        description: 'Descriação editada',
-        priceInCents: 123,
-        categoryId: 'non-existent-category',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: product.ownerId.toValue(),
+      title: 'Produto editado',
+      description: 'Descriação editada',
+      priceInCents: 123,
+      categoryId: 'non-existent-category',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to edit a non-existent product', async () => {
@@ -118,16 +123,17 @@ describe('Edit Product', () => {
 
     await inMemoryCategoriesRepository.create(category)
 
-    await expect(() => {
-      return sut.execute({
-        productId: 'non-existent product',
-        ownerId: product.ownerId.toValue(),
-        title: 'Produto editado',
-        description: 'Descriação editada',
-        priceInCents: 123,
-        categoryId: category.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: 'non-existent product',
+      ownerId: product.ownerId.toValue(),
+      title: 'Produto editado',
+      description: 'Descriação editada',
+      priceInCents: 123,
+      categoryId: category.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to edit a product from another user', async () => {
@@ -136,7 +142,7 @@ describe('Edit Product', () => {
     await inMemorySellersRepository.create(seller)
 
     const product = makeProduct({
-      ownerId: seller.id,
+      ownerId: new UniqueEntityID('owner-2'),
     })
 
     await inMemoryProductsRepository.create(product)
@@ -145,16 +151,17 @@ describe('Edit Product', () => {
 
     await inMemoryCategoriesRepository.create(category)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: 'owner-2',
-        title: 'Produto editado',
-        description: 'Descriação editada',
-        priceInCents: 123,
-        categoryId: category.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: 'owner-1',
+      title: 'Produto editado',
+      description: 'Descriação editada',
+      priceInCents: 123,
+      categoryId: category.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
   it('should not be able to edit a sold product', async () => {
@@ -173,15 +180,16 @@ describe('Edit Product', () => {
 
     await inMemoryCategoriesRepository.create(category)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: product.ownerId.toValue(),
-        title: 'Produto editado',
-        description: 'Descriação editada',
-        priceInCents: 123,
-        categoryId: category.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: product.ownerId.toValue(),
+      title: 'Produto editado',
+      description: 'Descriação editada',
+      priceInCents: 123,
+      categoryId: category.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

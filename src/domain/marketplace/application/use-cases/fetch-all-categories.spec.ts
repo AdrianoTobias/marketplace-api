@@ -16,8 +16,9 @@ describe('Fetch all Categories', () => {
       await inMemoryCategoriesRepository.create(makeCategory())
     }
 
-    const { categories } = await sut.execute()
+    const result = await sut.execute()
 
-    expect(categories).toHaveLength(20)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.categories).toHaveLength(20)
   })
 })

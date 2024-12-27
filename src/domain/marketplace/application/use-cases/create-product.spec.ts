@@ -4,6 +4,7 @@ import { InMemoryProductsRepository } from 'test/repositories/in-memory-products
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { makeSeller } from 'test/factories/make-seller'
 import { makeCategory } from 'test/factories/make-category'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -31,7 +32,7 @@ describe('Create Product', () => {
 
     await inMemoryCategoriesRepository.create(category)
 
-    const { product } = await sut.execute({
+    const result = await sut.execute({
       title: 'Novo produto',
       description: 'Descrição do produto',
       priceInCents: 1000,
@@ -39,8 +40,11 @@ describe('Create Product', () => {
       categoryId: category.id.toValue(),
     })
 
-    expect(product.id).toBeTruthy()
-    expect(inMemoryProductsRepository.items[0].id).toEqual(product.id)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.product.id).toBeTruthy()
+    expect(inMemoryProductsRepository.items[0].id).toEqual(
+      result.value?.product.id,
+    )
   })
 
   it('should not be able to create a product with a non-existent user', async () => {
@@ -48,15 +52,16 @@ describe('Create Product', () => {
 
     await inMemoryCategoriesRepository.create(category)
 
-    await expect(() => {
-      return sut.execute({
-        title: 'Novo produto',
-        description: 'Descrição do produto',
-        priceInCents: 1000,
-        ownerId: 'non-existent-user',
-        categoryId: category.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      title: 'Novo produto',
+      description: 'Descrição do produto',
+      priceInCents: 1000,
+      ownerId: 'non-existent-user',
+      categoryId: category.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to create a product with a non-existent category', async () => {
@@ -64,14 +69,15 @@ describe('Create Product', () => {
 
     await inMemorySellersRepository.create(seller)
 
-    await expect(() => {
-      return sut.execute({
-        title: 'Novo produto',
-        description: 'Descrição do produto',
-        priceInCents: 1000,
-        ownerId: seller.id.toValue(),
-        categoryId: 'non-existent-category',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      title: 'Novo produto',
+      description: 'Descrição do produto',
+      priceInCents: 1000,
+      ownerId: seller.id.toValue(),
+      categoryId: 'non-existent-category',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

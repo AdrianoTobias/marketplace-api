@@ -1,6 +1,8 @@
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
+import { Either, left, right } from '@/core/either'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface CountSellerProductsUseCaseRequest {
   sellerId: string
@@ -8,9 +10,12 @@ interface CountSellerProductsUseCaseRequest {
   from?: Date
 }
 
-interface CountSellerProductsUseCaseResponse {
-  amount: number
-}
+type CountSellerProductsUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    amount: number
+  }
+>
 
 export class CountSellerProductsUseCase {
   constructor(
@@ -26,7 +31,7 @@ export class CountSellerProductsUseCase {
     const seller = await this.sellersRepository.findById(sellerId)
 
     if (!seller) {
-      throw new Error('Seller not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const amount = await this.productsRepository.count({
@@ -35,8 +40,8 @@ export class CountSellerProductsUseCase {
       from,
     })
 
-    return {
+    return right({
       amount,
-    }
+    })
   }
 }

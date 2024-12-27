@@ -3,6 +3,8 @@ import { ProductsRepository } from '../repositories/products-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { CategoriesRepository } from '../repositories/categories-repository'
+import { Either, left, right } from '@/core/either'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -12,9 +14,12 @@ interface CreateProductUseCaseRequest {
   categoryId: string
 }
 
-interface CreateProductUseCaseResponse {
-  product: Product
-}
+type CreateProductUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    product: Product
+  }
+>
 
 export class CreateProductUseCase {
   constructor(
@@ -33,13 +38,13 @@ export class CreateProductUseCase {
     const seller = await this.sellersRepository.findById(ownerId)
 
     if (!seller) {
-      throw new Error('Seller not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const category = await this.categoriesRepository.findById(categoryId)
 
     if (!category) {
-      throw new Error('Category not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const product = Product.create({
@@ -52,8 +57,8 @@ export class CreateProductUseCase {
 
     await this.productsRepository.create(product)
 
-    return {
+    return right({
       product,
-    }
+    })
   }
 }

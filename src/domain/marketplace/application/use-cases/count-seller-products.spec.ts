@@ -4,6 +4,7 @@ import { makeProduct } from 'test/factories/make-product'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { makeSeller } from 'test/factories/make-seller'
 import { ProductStatus } from '../../enterprise/entities/product'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -39,13 +40,14 @@ describe('Count Seller Products', () => {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const { amount } = await sut.execute({
+    const result = await sut.execute({
       sellerId: seller.id.toValue(),
       status: ProductStatus.SOLD,
       from: thirtyDaysAgo,
     })
 
-    expect(amount).toEqual(15)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.amount).toEqual(15)
   })
 
   it('should be able to count the amount of available products in the last 30 days', async () => {
@@ -68,25 +70,27 @@ describe('Count Seller Products', () => {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const { amount } = await sut.execute({
+    const result = await sut.execute({
       sellerId: seller.id.toValue(),
       status: ProductStatus.AVAILABLE,
       from: thirtyDaysAgo,
     })
 
-    expect(amount).toEqual(15)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.amount).toEqual(15)
   })
 
   it('should not be able to count products of a non-existent seller', async () => {
     const product = makeProduct()
     await inMemoryProductsRepository.create(product)
 
-    await expect(() => {
-      return sut.execute({
-        sellerId: 'seller-1',
-        status: ProductStatus.SOLD,
-        from: new Date(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      sellerId: 'seller-1',
+      status: ProductStatus.SOLD,
+      from: new Date(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

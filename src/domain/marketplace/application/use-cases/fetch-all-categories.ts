@@ -1,9 +1,13 @@
 import { Category } from '@/domain/marketplace/enterprise/entities/category'
 import { CategoriesRepository } from '../repositories/categories-repository'
+import { Either, right } from '@/core/either'
 
-interface FetchAllCategoriesUseCaseResponse {
-  categories: Category[]
-}
+type FetchAllCategoriesUseCaseResponse = Either<
+  null,
+  {
+    categories: Category[]
+  }
+>
 
 export class FetchAllCategoriesUseCase {
   constructor(private categoriesRepository: CategoriesRepository) {}
@@ -11,8 +15,8 @@ export class FetchAllCategoriesUseCase {
   async execute(): Promise<FetchAllCategoriesUseCaseResponse> {
     const categories = await this.categoriesRepository.listAll()
 
-    return {
+    return right({
       categories,
-    }
+    })
   }
 }

@@ -1,13 +1,17 @@
 import { Category } from '@/domain/marketplace/enterprise/entities/category'
 import { CategoriesRepository } from '../repositories/categories-repository'
+import { Either, right } from '@/core/either'
 
 interface CreateCategoryUseCaseRequest {
   title: string
 }
 
-interface CreateCategoryUseCaseResponse {
-  category: Category
-}
+type CreateCategoryUseCaseResponse = Either<
+  null,
+  {
+    category: Category
+  }
+>
 
 export class CreateCategoryUseCase {
   constructor(private categoriesRepository: CategoriesRepository) {}
@@ -21,8 +25,8 @@ export class CreateCategoryUseCase {
 
     await this.categoriesRepository.create(category)
 
-    return {
+    return right({
       category,
-    }
+    })
   }
 }

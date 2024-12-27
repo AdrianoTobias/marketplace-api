@@ -17,11 +17,12 @@ describe('Get Category by id', () => {
 
     await inMemoryCategoriesRepository.create(newCategory)
 
-    const { category } = await sut.execute({
+    const result = await sut.execute({
       id: 'category-1',
     })
 
-    expect(category.id).toBeTruthy()
-    expect(category.title).toEqual(newCategory.title)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.category.id).toBeTruthy()
+    expect(result.value?.category.title).toEqual(newCategory.title)
   })
 })

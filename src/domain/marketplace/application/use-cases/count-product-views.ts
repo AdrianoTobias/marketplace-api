@@ -1,14 +1,19 @@
 import { ViewsRepository } from '../repositories/views-repository'
 import { ProductsRepository } from '../repositories/products-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { Either, left, right } from '@/core/either'
 
 interface CountProductViewsUseCaseRequest {
   productId: string
   from?: Date
 }
 
-interface CountProductViewsUseCaseResponse {
-  amount: number
-}
+type CountProductViewsUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    amount: number
+  }
+>
 
 export class CountProductViewsUseCase {
   constructor(
@@ -23,7 +28,7 @@ export class CountProductViewsUseCase {
     const product = await this.productsRepository.findById(productId)
 
     if (!product) {
-      throw new Error('Product not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const sellerId = product.ownerId.toString()
@@ -34,8 +39,8 @@ export class CountProductViewsUseCase {
       from,
     })
 
-    return {
+    return right({
       amount,
-    }
+    })
   }
 }

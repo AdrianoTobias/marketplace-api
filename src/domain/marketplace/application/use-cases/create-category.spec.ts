@@ -11,11 +11,14 @@ describe('Create Category', () => {
   })
 
   it('should be able to create a category', async () => {
-    const { category } = await sut.execute({
+    const result = await sut.execute({
       title: 'Nova categoria',
     })
 
-    expect(category.id).toBeTruthy()
-    expect(inMemoryCategoriesRepository.items[0].id).toEqual(category.id)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.category?.id).toBeTruthy()
+    expect(inMemoryCategoriesRepository.items[0].id).toEqual(
+      result.value?.category?.id,
+    )
   })
 })

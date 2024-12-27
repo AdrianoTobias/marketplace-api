@@ -5,6 +5,9 @@ import {
 import { ProductsRepository } from '../repositories/products-repository'
 import { CategoriesRepository } from '../repositories/categories-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
+import { NotAllowedError } from './errors/not-allowed-error'
+import { Either, left, right } from '@/core/either'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface EditProductUseCaseRequest {
   productId: string
@@ -15,9 +18,12 @@ interface EditProductUseCaseRequest {
   categoryId: string
 }
 
-interface EditProductUseCaseResponse {
-  product: Product
-}
+type EditProductUseCaseResponse = Either<
+  ResourceNotFoundError | NotAllowedError,
+  {
+    product: Product
+  }
+>
 
 export class EditProductUseCase {
   constructor(
@@ -37,27 +43,27 @@ export class EditProductUseCase {
     const seller = await this.sellersRepository.findById(ownerId)
 
     if (!seller) {
-      throw new Error('Seller not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const product = await this.productsRepository.findById(productId)
 
     if (!product) {
-      throw new Error('Product not found.')
+      return left(new ResourceNotFoundError())
     }
 
     if (seller.id !== product.ownerId) {
-      throw new Error('Not allowed.')
+      return left(new NotAllowedError())
     }
 
     if (product.status === ProductStatus.SOLD) {
-      throw new Error('Not allowed.')
+      return left(new NotAllowedError())
     }
 
     const category = await this.categoriesRepository.findById(categoryId)
 
     if (!category) {
-      throw new Error('Category not found.')
+      return left(new ResourceNotFoundError())
     }
 
     product.title = title
@@ -67,8 +73,8 @@ export class EditProductUseCase {
 
     await this.productsRepository.save(product)
 
-    return {
+    return right({
       product,
-    }
+    })
   }
 }

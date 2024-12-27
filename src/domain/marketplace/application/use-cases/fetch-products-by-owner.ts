@@ -1,6 +1,8 @@
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
+import { Either, left, right } from '@/core/either'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface FetchProductsByOwnerIdUseCaseRequest {
   ownerId: string
@@ -8,9 +10,12 @@ interface FetchProductsByOwnerIdUseCaseRequest {
   status?: Product['status']
 }
 
-interface FetchProductsByOwnerIdUseCaseResponse {
-  products: Product[]
-}
+type FetchProductsByOwnerIdUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    products: Product[]
+  }
+>
 
 export class FetchProductsByOwnerIdUseCase {
   constructor(
@@ -26,7 +31,7 @@ export class FetchProductsByOwnerIdUseCase {
     const seller = await this.sellersRepository.findById(ownerId)
 
     if (!seller) {
-      throw new Error('Seller not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const products = await this.productsRepository.findManyByOwner({
@@ -35,8 +40,8 @@ export class FetchProductsByOwnerIdUseCase {
       status,
     })
 
-    return {
+    return right({
       products,
-    }
+    })
   }
 }

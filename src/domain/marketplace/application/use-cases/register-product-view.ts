@@ -2,15 +2,21 @@ import { ProductsRepository } from '../repositories/products-repository'
 import { ViewersRepository } from '../repositories/viewers-repository'
 import { View } from '../../enterprise/entities/view'
 import { ViewsRepository } from '../repositories/views-repository'
+import { Either, left, right } from '@/core/either'
+import { NotAllowedError } from './errors/not-allowed-error'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface RegisterProductViewUseCaseRequest {
   productId: string
   viewerId: string
 }
 
-interface RegisterProductViewUseCaseResponse {
-  view: View
-}
+type RegisterProductViewUseCaseResponse = Either<
+  ResourceNotFoundError | NotAllowedError,
+  {
+    view: View
+  }
+>
 
 export class RegisterProductViewUseCase {
   constructor(
@@ -26,17 +32,17 @@ export class RegisterProductViewUseCase {
     const viewer = await this.viewersRepository.findById(viewerId)
 
     if (!viewer) {
-      throw new Error('Viewer not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const product = await this.productsRepository.findById(productId)
 
     if (!product) {
-      throw new Error('Product not found.')
+      return left(new ResourceNotFoundError())
     }
 
     if (viewerId === product.ownerId.toString()) {
-      throw new Error('Not allowed.')
+      return left(new NotAllowedError())
     }
 
     const view = View.create({
@@ -47,13 +53,13 @@ export class RegisterProductViewUseCase {
     const isViewed = await this.viewsRepository.isViewed(view)
 
     if (isViewed) {
-      throw new Error('Cannot register a duclicate view.')
+      return left(new NotAllowedError())
     }
 
     await this.viewsRepository.create(view)
 
-    return {
+    return right({
       view,
-    }
+    })
   }
 }

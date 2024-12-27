@@ -23,11 +23,12 @@ describe('Fetch All Products', () => {
       makeProduct({ createdAt: new Date(2024, 11, 23) }),
     )
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       page: 1,
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({ createdAt: new Date(2024, 11, 23) }),
       expect.objectContaining({ createdAt: new Date(2024, 11, 20) }),
       expect.objectContaining({ createdAt: new Date(2024, 11, 18) }),
@@ -39,11 +40,12 @@ describe('Fetch All Products', () => {
       await inMemoryProductsRepository.create(makeProduct())
     }
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       page: 2,
     })
 
-    expect(products).toHaveLength(2)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toHaveLength(2)
   })
 
   it('should be able to fetch filtered products by title or description', async () => {
@@ -69,12 +71,13 @@ describe('Fetch All Products', () => {
       }),
     )
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       page: 1,
       search: '2',
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({
         title: 'Produto 1',
         description: 'Descrição 123',
@@ -108,12 +111,13 @@ describe('Fetch All Products', () => {
       }),
     )
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       page: 1,
       status: ProductStatus.AVAILABLE,
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({
         status: ProductStatus.AVAILABLE,
         createdAt: new Date(2024, 11, 23),
@@ -151,13 +155,14 @@ describe('Fetch All Products', () => {
       }),
     )
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       page: 1,
       search: '2',
       status: ProductStatus.AVAILABLE,
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({
         title: 'Produto 1',
         description: 'Descrição 123',

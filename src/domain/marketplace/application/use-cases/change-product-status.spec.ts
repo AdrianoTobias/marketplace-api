@@ -5,6 +5,8 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { makeSeller } from 'test/factories/make-seller'
 import { ProductStatus } from '../../enterprise/entities/product'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -32,17 +34,14 @@ describe('Change Product status', () => {
 
     await inMemoryProductsRepository.create(product)
 
-    await sut.execute({
+    const result = await sut.execute({
       productId: product.id.toValue(),
       ownerId: product.ownerId.toValue(),
       newStatus: ProductStatus.SOLD,
     })
 
-    expect(inMemoryProductsRepository.items[0]).toMatchObject({
-      id: product.id,
-      ownerId: product.ownerId,
-      status: ProductStatus.SOLD,
-    })
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryProductsRepository.items[0]).toEqual(result.value?.product)
   })
 
   it('should not be able to change a product status from a non-existent user', async () => {
@@ -50,13 +49,14 @@ describe('Change Product status', () => {
 
     await inMemoryProductsRepository.create(product)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: 'owner-1',
-        newStatus: ProductStatus.SOLD,
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: 'owner-1',
+      newStatus: ProductStatus.SOLD,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to change the status of a non-existent product', async () => {
@@ -64,13 +64,14 @@ describe('Change Product status', () => {
 
     await inMemorySellersRepository.create(seller)
 
-    await expect(() => {
-      return sut.execute({
-        productId: 'product-id',
-        ownerId: seller.id.toValue(),
-        newStatus: ProductStatus.SOLD,
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: 'product-id',
+      ownerId: seller.id.toValue(),
+      newStatus: ProductStatus.SOLD,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it("should not be able to change the status of another user's product", async () => {
@@ -78,18 +79,19 @@ describe('Change Product status', () => {
     await inMemorySellersRepository.create(seller)
 
     const product = makeProduct({
-      ownerId: seller.id,
+      ownerId: new UniqueEntityID('seller-2'),
     })
 
     await inMemoryProductsRepository.create(product)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: 'seller-2',
-        newStatus: ProductStatus.SOLD,
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: 'seller-1',
+      newStatus: ProductStatus.SOLD,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
   it('should not be able to mark as cancelled a sold product', async () => {
@@ -104,13 +106,14 @@ describe('Change Product status', () => {
 
     await inMemoryProductsRepository.create(product)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: seller.id.toValue(),
-        newStatus: ProductStatus.CANCELLED,
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: seller.id.toValue(),
+      newStatus: ProductStatus.CANCELLED,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
   it('should not be able to mark as sold a cancelled product', async () => {
@@ -125,12 +128,13 @@ describe('Change Product status', () => {
 
     await inMemoryProductsRepository.create(product)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        ownerId: seller.id.toValue(),
-        newStatus: ProductStatus.SOLD,
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: seller.id.toValue(),
+      newStatus: ProductStatus.SOLD,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

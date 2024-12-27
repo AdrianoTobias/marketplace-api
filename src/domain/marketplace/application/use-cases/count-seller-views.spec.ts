@@ -3,6 +3,7 @@ import { InMemoryViewsRepository } from 'test/repositories/in-memory-views-repos
 import { makeView } from 'test/factories/make-view'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { makeSeller } from 'test/factories/make-seller'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryViewsRepository: InMemoryViewsRepository
@@ -40,22 +41,24 @@ describe('Count Seller Views', () => {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
     thirtyDaysAgo.setHours(0, 0, 0, 0)
 
-    const { amount } = await sut.execute({
+    const result = await sut.execute({
       sellerId: seller.id.toValue(),
       from: thirtyDaysAgo,
     })
 
-    expect(amount).toEqual(15)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.amount).toEqual(15)
   })
 
   it('should not be able to count views of a non-existent seller', async () => {
     const view = makeView()
     await inMemoryViewsRepository.create(view)
 
-    await expect(() => {
-      return sut.execute({
-        sellerId: 'seller-1',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      sellerId: 'seller-1',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

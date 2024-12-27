@@ -6,6 +6,8 @@ import { makeProduct } from 'test/factories/make-product'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeViewer } from 'test/factories/make-viewer'
 import { makeView } from 'test/factories/make-view'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryViewersRepository: InMemoryViewersRepository
@@ -31,37 +33,40 @@ describe('Register Product View', () => {
     const viewer = makeViewer({}, new UniqueEntityID('user-2'))
     await inMemoryViewersRepository.create(viewer)
 
-    const { view } = await sut.execute({
+    const result = await sut.execute({
       productId: product.id.toValue(),
       viewerId: viewer.id.toValue(),
     })
 
-    expect(view.id).toBeTruthy()
-    expect(inMemoryViewsRepository.items[0].id).toEqual(view.id)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.view.id).toBeTruthy()
+    expect(inMemoryViewsRepository.items[0].id).toEqual(result.value?.view.id)
   })
 
   it('should not be able to register a view on a non-existent product', async () => {
     const viewer = makeViewer({}, new UniqueEntityID('user-1'))
     await inMemoryViewersRepository.create(viewer)
 
-    await expect(() => {
-      return sut.execute({
-        productId: 'product-1',
-        viewerId: viewer.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: 'product-1',
+      viewerId: viewer.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to register a product view with a non-existent user', async () => {
     const product = makeProduct({ ownerId: new UniqueEntityID('user-1') })
     await inMemoryProductsRepository.create(product)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        viewerId: 'user-2',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      viewerId: 'user-2',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to register a product view with the product owner', async () => {
@@ -71,12 +76,13 @@ describe('Register Product View', () => {
     const viewer = makeViewer({}, new UniqueEntityID('user-1'))
     await inMemoryViewersRepository.create(viewer)
 
-    await expect(() => {
-      return sut.execute({
-        productId: product.id.toValue(),
-        viewerId: viewer.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      viewerId: viewer.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
   it('should not be able to register a duplicate product view', async () => {
@@ -89,11 +95,11 @@ describe('Register Product View', () => {
     const view = makeView({ product, viewer })
     await inMemoryViewsRepository.create(view)
 
-    await expect(() => {
-      return sut.execute({
-        productId: view.product.id.toValue(),
-        viewerId: view.viewer.id.toValue(),
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: view.product.id.toValue(),
+      viewerId: view.viewer.id.toValue(),
+    })
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

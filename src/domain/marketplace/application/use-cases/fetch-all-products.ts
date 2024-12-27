@@ -1,5 +1,6 @@
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
+import { Either, right } from '@/core/either'
 
 interface FetchAllProductsUseCaseRequest {
   page: number
@@ -7,9 +8,12 @@ interface FetchAllProductsUseCaseRequest {
   status?: Product['status']
 }
 
-interface FetchAllProductsUseCaseResponse {
-  products: Product[]
-}
+type FetchAllProductsUseCaseResponse = Either<
+  null,
+  {
+    products: Product[]
+  }
+>
 
 export class FetchAllProductsUseCase {
   constructor(private productsRepository: ProductsRepository) {}
@@ -25,8 +29,8 @@ export class FetchAllProductsUseCase {
       status,
     })
 
-    return {
+    return right({
       products,
-    }
+    })
   }
 }

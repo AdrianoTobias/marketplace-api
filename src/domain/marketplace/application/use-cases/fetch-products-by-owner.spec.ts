@@ -45,11 +45,12 @@ describe('Fetch Products by Owner', () => {
       }),
     )
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       ownerId: seller1.id.toString(),
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({
         ownerId: seller1.id,
         createdAt: new Date(2024, 11, 23),
@@ -99,12 +100,13 @@ describe('Fetch Products by Owner', () => {
       )
     }
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       ownerId: seller1.id.toString(),
       search: '2',
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({
         description: 'Descrição 123',
       }),
@@ -149,12 +151,13 @@ describe('Fetch Products by Owner', () => {
       )
     }
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       ownerId: seller1.id.toString(),
       status: ProductStatus.AVAILABLE,
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({
         ownerId: seller1.id,
         status: ProductStatus.AVAILABLE,
@@ -209,13 +212,14 @@ describe('Fetch Products by Owner', () => {
       )
     }
 
-    const { products } = await sut.execute({
+    const result = await sut.execute({
       ownerId: seller1.id.toString(),
       search: '2',
       status: ProductStatus.AVAILABLE,
     })
 
-    expect(products).toEqual([
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.products).toEqual([
       expect.objectContaining({
         title: 'Produto 1',
       }),

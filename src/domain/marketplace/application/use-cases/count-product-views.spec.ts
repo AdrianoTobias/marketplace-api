@@ -3,6 +3,7 @@ import { InMemoryViewsRepository } from 'test/repositories/in-memory-views-repos
 import { makeView } from 'test/factories/make-view'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
 import { makeProduct } from 'test/factories/make-product'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryViewsRepository: InMemoryViewsRepository
@@ -38,22 +39,24 @@ describe('Count Product Views', () => {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
     sevenDaysAgo.setHours(0, 0, 0, 0)
 
-    const { amount } = await sut.execute({
+    const result = await sut.execute({
       productId: product.id.toValue(),
       from: sevenDaysAgo,
     })
 
-    expect(amount).toEqual(7)
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.amount).toEqual(7)
   })
 
   it('should not be able to count views of a non-existent product', async () => {
     const view = makeView()
     await inMemoryViewsRepository.create(view)
 
-    await expect(() => {
-      return sut.execute({
-        productId: 'product-1',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      productId: 'product-1',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

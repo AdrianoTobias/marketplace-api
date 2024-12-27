@@ -1,13 +1,18 @@
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
+import { Either, left, right } from '@/core/either'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface GetProductByIdUseCaseRequest {
   id: string
 }
 
-interface GetProductByIdUseCaseResponse {
-  product: Product
-}
+type GetProductByIdUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    product: Product
+  }
+>
 
 export class GetProductByIdUseCase {
   constructor(private productsRepository: ProductsRepository) {}
@@ -18,11 +23,11 @@ export class GetProductByIdUseCase {
     const product = await this.productsRepository.findById(id)
 
     if (!product) {
-      throw new Error('Product not found.')
+      return left(new ResourceNotFoundError())
     }
 
-    return {
+    return right({
       product,
-    }
+    })
   }
 }

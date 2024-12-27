@@ -3,6 +3,7 @@ import { InMemoryViewsRepository } from 'test/repositories/in-memory-views-repos
 import { makeView } from 'test/factories/make-view'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { makeSeller } from 'test/factories/make-seller'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryViewsRepository: InMemoryViewsRepository
@@ -19,14 +20,17 @@ describe('Count Seller Views per day', () => {
   })
 
   it('should be able to count the views per day received by the seller in the last 30 days', async () => {
-    const baseView = makeView()
+    const baseView = makeView({ createdAt: new Date('1900-01-01') })
 
     const seller = makeSeller({}, baseView.product.ownerId)
     await inMemorySellersRepository.create(seller)
 
+    const now = new Date()
+
     for (let i = 1; i <= 50; i++) {
-      const fakerCreatedAt = new Date()
-      fakerCreatedAt.setDate(fakerCreatedAt.getDate() - i * 2)
+      const fakerCreatedAt = new Date(
+        Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() - i * 2),
+      )
 
       const view = makeView({
         product: baseView.product,
@@ -36,9 +40,9 @@ describe('Count Seller Views per day', () => {
       await inMemoryViewsRepository.create(view)
     }
 
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    thirtyDaysAgo.setHours(0, 0, 0, 0)
+    const thirtyDaysAgo = new Date(
+      Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() - 30),
+    )
 
     const oneMoreView = makeView({
       product: baseView.product,
@@ -46,21 +50,15 @@ describe('Count Seller Views per day', () => {
     })
     await inMemoryViewsRepository.create(oneMoreView)
 
-    const { viewsPerDay } = await sut.execute({
+    const result = await sut.execute({
       sellerId: seller.id.toValue(),
       from: thirtyDaysAgo,
     })
 
-    expect(viewsPerDay).length(15)
-    expect(viewsPerDay[14]).toEqual(
+    expect(result.value?.viewsPerDay).length(15)
+    expect(result.value?.viewsPerDay[14]).toEqual(
       expect.objectContaining({
-        date: new Date(
-          Date.UTC(
-            thirtyDaysAgo.getFullYear(),
-            thirtyDaysAgo.getMonth(),
-            thirtyDaysAgo.getDate(),
-          ),
-        ),
+        date: thirtyDaysAgo,
         amount: 2,
       }),
     )
@@ -70,10 +68,11 @@ describe('Count Seller Views per day', () => {
     const view = makeView()
     await inMemoryViewsRepository.create(view)
 
-    await expect(() => {
-      return sut.execute({
-        sellerId: 'seller-1',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      sellerId: 'seller-1',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

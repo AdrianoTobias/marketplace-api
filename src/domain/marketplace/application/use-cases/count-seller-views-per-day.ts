@@ -1,14 +1,19 @@
 import { ViewsPerDay, ViewsRepository } from '../repositories/views-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
+import { Either, left, right } from '@/core/either'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface CountSellerViewsPerDayUseCaseRequest {
   sellerId: string
   from?: Date
 }
 
-interface CountSellerViewsPerDayUseCaseResponse {
-  viewsPerDay: ViewsPerDay[]
-}
+type CountSellerViewsPerDayUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    viewsPerDay: ViewsPerDay[]
+  }
+>
 
 export class CountSellerViewsPerDayUseCase {
   constructor(
@@ -23,7 +28,7 @@ export class CountSellerViewsPerDayUseCase {
     const seller = await this.sellersRepository.findById(sellerId)
 
     if (!seller) {
-      throw new Error('Seller not found.')
+      return left(new ResourceNotFoundError())
     }
 
     const viewsPerDay = await this.viewsRepository.countPerDay({
@@ -31,8 +36,8 @@ export class CountSellerViewsPerDayUseCase {
       from,
     })
 
-    return {
+    return right({
       viewsPerDay,
-    }
+    })
   }
 }
