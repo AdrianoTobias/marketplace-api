@@ -9,10 +9,17 @@ import { makeSeller } from 'test/factories/make-seller'
 import { ProductStatus } from '../../enterprise/entities/product'
 import { NotAllowedError } from './errors/not-allowed-error'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
+import { makeAttachment } from 'test/factories/make-attachment'
+import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
+import { makeProductAttachment } from 'test/factories/make-product-attachment'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let sut: EditProductUseCase
 
 describe('Edit Product', () => {
@@ -20,22 +27,54 @@ describe('Edit Product', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
 
     sut = new EditProductUseCase(
       inMemorySellersRepository,
       inMemoryProductsRepository,
       inMemoryCategoriesRepository,
+      inMemoryAttachmentsRepository,
+      inMemoryProductAttachmentsRepository,
     )
   })
 
   it('should be able to edit a product', async () => {
-    const seller = makeSeller()
+    await inMemoryAttachmentsRepository.createMany([
+      makeAttachment({}, new UniqueEntityID('1')),
+      makeAttachment({}, new UniqueEntityID('2')),
+      makeAttachment({}, new UniqueEntityID('3')),
+    ])
 
+    const productAttachmet1 = makeProductAttachment({
+      attachmentId: new UniqueEntityID('1'),
+      productId: new UniqueEntityID('product-1'),
+    })
+
+    const productAttachmet2 = makeProductAttachment({
+      attachmentId: new UniqueEntityID('2'),
+      productId: new UniqueEntityID('product-1'),
+    })
+
+    await inMemoryProductAttachmentsRepository.createMany([
+      productAttachmet1,
+      productAttachmet2,
+    ])
+
+    const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
-    const product = makeProduct({
-      ownerId: seller.id,
-    })
+    const product = makeProduct(
+      {
+        ownerId: seller.id,
+        attachments: new ProductAttachmentList([
+          productAttachmet1,
+          productAttachmet2,
+        ]),
+      },
+      new UniqueEntityID('product-1'),
+    )
 
     await inMemoryProductsRepository.create(product)
 
@@ -50,6 +89,7 @@ describe('Edit Product', () => {
       description: 'Descriação editada',
       priceInCents: 123,
       categoryId: category.id.toValue(),
+      attachmentsIds: ['1', '3'],
     })
 
     expect(result.isRight()).toBe(true)
@@ -60,6 +100,15 @@ describe('Edit Product', () => {
       ownerId: seller.id,
       categoryId: category.id,
     })
+    expect(
+      inMemoryProductsRepository.items[0].attachments.currentItems,
+    ).toHaveLength(2)
+    expect(
+      inMemoryProductsRepository.items[0].attachments.currentItems,
+    ).toEqual([
+      expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
+      expect.objectContaining({ attachmentId: new UniqueEntityID('3') }),
+    ])
   })
 
   it('should not be able to edit a product with a non-existent user', async () => {
@@ -78,6 +127,7 @@ describe('Edit Product', () => {
       description: 'Descriação editada',
       priceInCents: 123,
       categoryId: category.id.toValue(),
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBe(true)
@@ -102,6 +152,7 @@ describe('Edit Product', () => {
       description: 'Descriação editada',
       priceInCents: 123,
       categoryId: 'non-existent-category',
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBe(true)
@@ -130,6 +181,7 @@ describe('Edit Product', () => {
       description: 'Descriação editada',
       priceInCents: 123,
       categoryId: category.id.toValue(),
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBe(true)
@@ -158,6 +210,7 @@ describe('Edit Product', () => {
       description: 'Descriação editada',
       priceInCents: 123,
       categoryId: category.id.toValue(),
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBe(true)
@@ -187,6 +240,7 @@ describe('Edit Product', () => {
       description: 'Descriação editada',
       priceInCents: 123,
       categoryId: category.id.toValue(),
+      attachmentsIds: [],
     })
 
     expect(result.isLeft()).toBe(true)
