@@ -1,6 +1,7 @@
 import { Category } from '@/domain/marketplace/enterprise/entities/category'
 import { CategoriesRepository } from '../repositories/categories-repository'
 import { Either, right } from '@/core/either'
+import { Injectable } from '@nestjs/common'
 
 type FetchAllCategoriesUseCaseResponse = Either<
   null,
@@ -9,6 +10,7 @@ type FetchAllCategoriesUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class FetchAllCategoriesUseCase {
   constructor(private categoriesRepository: CategoriesRepository) {}
 

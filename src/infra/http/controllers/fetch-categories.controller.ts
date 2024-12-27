@@ -1,16 +1,23 @@
 import { Controller, Get, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
+import { CategoryPresenter } from '../presenters/category-presenter'
 
 @Controller('/categories')
 @UseGuards(JwtAuthGuard)
 export class FetchRecentQuestionsController {
-  constructor(private prisma: PrismaService) {}
+  constructor(private fetchAllCategories: FetchAllCategoriesUseCase) {}
 
   @Get()
   async handle() {
-    const categories = await this.prisma.category.findMany()
+    const result = await this.fetchAllCategories.execute()
 
-    return { categories }
+    if (result.isLeft()) {
+      throw new Error()
+    }
+
+    const categories = result.value.categories
+
+    return { categories: categories.map(CategoryPresenter.toHTTP) }
   }
 }

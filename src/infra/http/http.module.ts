@@ -8,6 +8,7 @@ import { FetchRecentQuestionsController } from './controllers/fetch-categories.c
 import { FetchRecentProductsController } from './controllers/fetch-recent-products.controller'
 import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
 import { DatabaseModule } from '../database/database-module'
+import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
 
 @Module({
   imports: [DatabaseModule],
@@ -19,6 +20,6 @@ import { DatabaseModule } from '../database/database-module'
     FetchRecentQuestionsController,
     FetchRecentProductsController,
   ],
-  providers: [CreateCategoryUseCase],
+  providers: [CreateCategoryUseCase, FetchAllCategoriesUseCase],
 })
 export class httpModule {}
