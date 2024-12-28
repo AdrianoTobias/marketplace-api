@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common'
+import { BadRequestException, Controller, Get, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
 import { CategoryPresenter } from '../presenters/category-presenter'
@@ -13,7 +13,7 @@ export class FetchRecentQuestionsController {
     const result = await this.fetchAllCategories.execute()
 
     if (result.isLeft()) {
-      throw new Error()
+      throw new BadRequestException()
     }
 
     const categories = result.value.categories

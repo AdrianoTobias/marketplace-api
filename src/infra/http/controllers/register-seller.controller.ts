@@ -1,7 +1,17 @@
-import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common'
+import {
+  BadRequestException,
+  Body,
+  ConflictException,
+  Controller,
+  HttpCode,
+  Post,
+  UsePipes,
+} from '@nestjs/common'
 import { z } from 'zod'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { RegisterSellerUseCase } from '@/domain/marketplace/application/use-cases/register-seller'
+import { EmailAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/email-already-exists-error'
+import { PhoneAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/phone-already-exists-error'
 
 const resgisterSellerBodySchema = z.object({
   name: z.string(),
@@ -30,7 +40,16 @@ export class ResgisterSellerController {
     })
 
     if (result.isLeft()) {
-      throw new Error()
+      const error = result.value
+
+      switch (error.constructor) {
+        case EmailAlreadyExistsError:
+          throw new ConflictException(error.message)
+        case PhoneAlreadyExistsError:
+          throw new ConflictException(error.message)
+        default:
+          throw new BadRequestException(error.message)
+      }
     }
   }
 }

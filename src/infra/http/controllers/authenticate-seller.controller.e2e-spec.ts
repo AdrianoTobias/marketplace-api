@@ -39,7 +39,7 @@ describe('Authenticate seller (E2E)', () => {
         password: '123456',
       })
 
-    expect(response.statusCode).toBe(201)
+    expect(response.statusCode).toBe(200)
     expect(response.body).toEqual({
       accessToken: expect.any(String),
     })

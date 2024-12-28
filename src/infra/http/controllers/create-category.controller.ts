@@ -1,4 +1,10 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
@@ -21,8 +27,12 @@ export class CreateCategoryController {
   async handle(@Body(bodyValidationPipe) body: CreateCategoryBodySchema) {
     const { title } = body
 
-    await this.createCategory.execute({
+    const result = await this.createCategory.execute({
       title,
     })
+
+    if (result.isLeft()) {
+      throw new BadRequestException()
+    }
   }
 }
