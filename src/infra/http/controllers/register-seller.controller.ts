@@ -12,6 +12,7 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { RegisterSellerUseCase } from '@/domain/marketplace/application/use-cases/register-seller'
 import { EmailAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/email-already-exists-error'
 import { PhoneAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/phone-already-exists-error'
+import { Public } from '@/infra/auth/public'
 
 const resgisterSellerBodySchema = z.object({
   name: z.string(),
@@ -23,6 +24,7 @@ const resgisterSellerBodySchema = z.object({
 type ResgisterSellerBodySchema = z.infer<typeof resgisterSellerBodySchema>
 
 @Controller('/sellers')
+@Public()
 export class ResgisterSellerController {
   constructor(private registerSeller: RegisterSellerUseCase) {}
 

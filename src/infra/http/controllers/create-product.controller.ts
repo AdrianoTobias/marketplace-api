@@ -1,6 +1,5 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Post } from '@nestjs/common'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
@@ -19,7 +18,6 @@ const bodyValidationPipe = new ZodValidationPipe(createProductBodySchema)
 type CreateProductBodySchema = z.infer<typeof createProductBodySchema>
 
 @Controller('/products')
-@UseGuards(JwtAuthGuard)
 export class CreateProductController {
   constructor(private prisma: PrismaService) {}
 

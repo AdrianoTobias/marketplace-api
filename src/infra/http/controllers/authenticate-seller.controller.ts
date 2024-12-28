@@ -11,6 +11,7 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-cases/authenticate-seller'
 import { WrongCredentialsError } from '@/domain/marketplace/application/use-cases/errors/wrong-credentials-error'
+import { Public } from '@/infra/auth/public'
 
 const authenticateSellerBodySchema = z.object({
   email: z.string().email(),
@@ -20,6 +21,7 @@ const authenticateSellerBodySchema = z.object({
 type AuthenticateSellerBodySchema = z.infer<typeof authenticateSellerBodySchema>
 
 @Controller('/sellers/sessions')
+@Public()
 export class AuthenticateSellerController {
   constructor(private authenticateSeller: AuthenticateSellerUseCase) {}
 

@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Post,
-  UseGuards,
-} from '@nestjs/common'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
@@ -19,7 +12,6 @@ const bodyValidationPipe = new ZodValidationPipe(createCategoryBodySchema)
 type CreateCategoryBodySchema = z.infer<typeof createCategoryBodySchema>
 
 @Controller('/categories')
-@UseGuards(JwtAuthGuard)
 export class CreateCategoryController {
   constructor(private createCategory: CreateCategoryUseCase) {}
 

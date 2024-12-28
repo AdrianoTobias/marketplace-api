@@ -1,10 +1,8 @@
-import { BadRequestException, Controller, Get, UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import { BadRequestException, Controller, Get } from '@nestjs/common'
 import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
 import { CategoryPresenter } from '../presenters/category-presenter'
 
 @Controller('/categories')
-@UseGuards(JwtAuthGuard)
 export class FetchRecentQuestionsController {
   constructor(private fetchAllCategories: FetchAllCategoriesUseCase) {}
 
