@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 
-describe('Create Account (E2E)', () => {
+describe('Register seller (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
 
@@ -25,9 +25,7 @@ describe('Create Account (E2E)', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
-      avatarId: null,
       password: '123456',
-      passwordConfirmation: '123456',
     })
 
     expect(response.statusCode).toBe(201)

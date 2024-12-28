@@ -1,17 +1,15 @@
 @baseUrl = http://localhost:3333
 @authToken = {{authenticate_seller.response.body.accessToken}}
 
-# @name create_account
+# @name register_seller
 POST {{baseUrl}}/sellers
 Content-Type: application/json
 
 {
-	"name": "Teste 1",
-  "phone": "123456789",
-	"email": "teste1@teste.com.br",
-  "avatarId": null,
-	"password": "123456",
-  "passwordConfirmation": "123456"
+	"name": "Teste 2",
+  "phone": "1234567892",
+	"email": "teste2@teste.com.br",
+	"password": "123456"
 }
 
 ###
