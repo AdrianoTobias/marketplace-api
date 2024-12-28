@@ -8,6 +8,7 @@ import { PrismaSellersRepository } from './prisma/repositories/prisma-sellers-re
 import { PrismaViewersRepository } from './prisma/repositories/prisma-viewers-repository'
 import { PrismaViewsRepository } from './prisma/repositories/prisma-views-repository'
 import { CategoriesRepository } from '@/domain/marketplace/application/repositories/categories-repository'
+import { SellersRepository } from '@/domain/marketplace/application/repositories/sellers-repository'
 
 @Module({
   providers: [
@@ -19,7 +20,10 @@ import { CategoriesRepository } from '@/domain/marketplace/application/repositor
     },
     PrismaProductAttachmentsRepository,
     PrismaProductsRepository,
-    PrismaSellersRepository,
+    {
+      provide: SellersRepository,
+      useClass: PrismaSellersRepository,
+    },
     PrismaViewersRepository,
     PrismaViewsRepository,
   ],
@@ -29,7 +33,7 @@ import { CategoriesRepository } from '@/domain/marketplace/application/repositor
     CategoriesRepository,
     PrismaProductAttachmentsRepository,
     PrismaProductsRepository,
-    PrismaSellersRepository,
+    SellersRepository,
     PrismaViewersRepository,
     PrismaViewsRepository,
   ],

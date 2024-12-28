@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 
-import { AuthenticateController } from './controllers/authenticate.controller'
+import { AuthenticateSellerController } from './controllers/authenticate-seller.controller'
 import { CreateAccountController } from './controllers/create-account.controller'
 import { CreateCategoryController } from './controllers/create-category.controller'
 import { CreateProductController } from './controllers/create-product.controller'
@@ -9,17 +9,25 @@ import { FetchRecentProductsController } from './controllers/fetch-recent-produc
 import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
 import { DatabaseModule } from '../database/database-module'
 import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
+import { CryptographyModule } from '../cryptography/cryptography.module'
+import { RegisterSellerUseCase } from '@/domain/marketplace/application/use-cases/register-seller'
+import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-cases/authenticate-seller'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, CryptographyModule],
   controllers: [
     CreateAccountController,
-    AuthenticateController,
+    AuthenticateSellerController,
     CreateCategoryController,
     CreateProductController,
     FetchRecentQuestionsController,
     FetchRecentProductsController,
   ],
-  providers: [CreateCategoryUseCase, FetchAllCategoriesUseCase],
+  providers: [
+    CreateCategoryUseCase,
+    FetchAllCategoriesUseCase,
+    RegisterSellerUseCase,
+    AuthenticateSellerUseCase,
+  ],
 })
 export class httpModule {}

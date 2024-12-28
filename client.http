@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3333
-@authToken = {{authenticate.response.body.access_token}}
+@authToken = {{authenticate_seller.response.body.accessToken}}
 
 # @name create_account
 POST {{baseUrl}}/sellers
@@ -16,7 +16,7 @@ Content-Type: application/json
 
 ###
 
-# @name authenticate
+# @name authenticate_seller
 POST {{baseUrl}}/sellers/sessions
 Content-Type: application/json
 

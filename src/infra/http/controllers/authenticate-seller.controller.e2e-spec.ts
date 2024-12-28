@@ -5,7 +5,7 @@ import { Test } from '@nestjs/testing'
 import { hash } from 'bcryptjs'
 import request from 'supertest'
 
-describe('Authenticate (E2E)', () => {
+describe('Authenticate seller (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
 
@@ -41,7 +41,7 @@ describe('Authenticate (E2E)', () => {
 
     expect(response.statusCode).toBe(201)
     expect(response.body).toEqual({
-      access_token: expect.any(String),
+      accessToken: expect.any(String),
     })
   })
 })

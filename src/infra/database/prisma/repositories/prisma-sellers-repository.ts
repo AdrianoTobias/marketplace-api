@@ -1,14 +1,60 @@
 import { SellersRepository } from '@/domain/marketplace/application/repositories/sellers-repository'
 import { Seller } from '@/domain/marketplace/enterprise/entities/user/seller'
 import { Injectable } from '@nestjs/common'
+import { PrismaService } from '../prisma.service'
+import { PrismaSellerMapper } from '../mappers/prisma-seller-mapper'
 
 @Injectable()
 export class PrismaSellersRepository implements SellersRepository {
-  findById(id: string): Promise<Seller | null> {
-    throw new Error('Method not implemented.')
+  constructor(private prisma: PrismaService) {}
+
+  async findById(id: string): Promise<Seller | null> {
+    const seller = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!seller) {
+      return null
+    }
+
+    return PrismaSellerMapper.toDomain(seller)
   }
 
-  create(product: Seller): Promise<void> {
-    throw new Error('Method not implemented.')
+  async findByEmail(email: string): Promise<Seller | null> {
+    const seller = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    })
+
+    if (!seller) {
+      return null
+    }
+
+    return PrismaSellerMapper.toDomain(seller)
+  }
+
+  async findByPhone(phone: string): Promise<Seller | null> {
+    const seller = await this.prisma.user.findUnique({
+      where: {
+        phone,
+      },
+    })
+
+    if (!seller) {
+      return null
+    }
+
+    return PrismaSellerMapper.toDomain(seller)
+  }
+
+  async create(seller: Seller): Promise<void> {
+    const data = PrismaSellerMapper.toPrisma(seller)
+
+    await this.prisma.user.create({
+      data,
+    })
   }
 }
