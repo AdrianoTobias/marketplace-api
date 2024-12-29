@@ -43,6 +43,7 @@ model Product {
     ownerId      String   @map("owner_id")
     categoryId   String   @map("category_id")
     createdAt    DateTime @default(now()) @map("created_at")
+    statusAt     DateTime @default(now()) @map("status_at")
 
     owner       User         @relation(fields: [ownerId], references: [id])
     category    Category     @relation(fields: [categoryId], references: [id])
