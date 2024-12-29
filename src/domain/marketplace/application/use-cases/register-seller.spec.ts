@@ -4,8 +4,12 @@ import { FakeHasher } from 'test/cryptography/fake-hasher'
 import { makeSeller } from 'test/factories/make-seller'
 import { EmailAlreadyExistsError } from './errors/email-already-exists-error'
 import { PhoneAlreadyExistsError } from './errors/phone-already-exists-error'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { makeAttachment } from 'test/factories/make-attachment'
 
 let inMemorySellersRepository: InMemorySellersRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let fakeHasher: FakeHasher
 
 let sut: RegisterSellerUseCase
@@ -13,17 +17,41 @@ let sut: RegisterSellerUseCase
 describe('Register Seller', () => {
   beforeEach(() => {
     inMemorySellersRepository = new InMemorySellersRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
 
-    sut = new RegisterSellerUseCase(inMemorySellersRepository, fakeHasher)
+    sut = new RegisterSellerUseCase(
+      inMemorySellersRepository,
+      inMemoryAttachmentsRepository,
+      fakeHasher,
+    )
   })
 
-  it('should be able to register a new seller', async () => {
+  it('should be able to register a seller without avatar', async () => {
     const result = await sut.execute({
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
       password: '123456',
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(result.value).toEqual({
+      seller: inMemorySellersRepository.items[0],
+    })
+  })
+
+  it('should be able to register a seller with avatar', async () => {
+    const avatar = makeAttachment()
+
+    await inMemoryAttachmentsRepository.create(avatar)
+
+    const result = await sut.execute({
+      name: 'John Doe',
+      phone: '123456789',
+      email: 'johndoe@example.com',
+      password: '123456',
+      avatarId: avatar.id.toString(),
     })
 
     expect(result.isRight()).toBe(true)
@@ -74,5 +102,18 @@ describe('Register Seller', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(PhoneAlreadyExistsError)
+  })
+
+  it('should not be able to register a seller with an invalid avatar', async () => {
+    const result = await sut.execute({
+      name: 'John Doe',
+      phone: '123456789',
+      email: 'johndoe@example.com',
+      password: '123456',
+      avatarId: 'invalid-avatar',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

@@ -5,6 +5,7 @@ import {
   Seller,
   SellerProps,
 } from '@/domain/marketplace/enterprise/entities/user/seller'
+import { makeAttachment } from './make-attachment'
 
 export function makeSeller(
   override: Partial<SellerProps> = {},
@@ -16,6 +17,7 @@ export function makeSeller(
       phone: faker.phone.number(),
       email: faker.internet.email(),
       password: faker.internet.password(),
+      avatar: makeAttachment(),
       ...override,
     },
     id,

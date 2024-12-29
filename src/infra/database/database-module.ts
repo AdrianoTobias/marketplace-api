@@ -9,11 +9,15 @@ import { PrismaViewersRepository } from './prisma/repositories/prisma-viewers-re
 import { PrismaViewsRepository } from './prisma/repositories/prisma-views-repository'
 import { CategoriesRepository } from '@/domain/marketplace/application/repositories/categories-repository'
 import { SellersRepository } from '@/domain/marketplace/application/repositories/sellers-repository'
+import { AttachmentsRepository } from '@/domain/marketplace/application/repositories/attachments-repository'
 
 @Module({
   providers: [
     PrismaService,
-    PrismaAttachmentsRepository,
+    {
+      provide: AttachmentsRepository,
+      useClass: PrismaAttachmentsRepository,
+    },
     {
       provide: CategoriesRepository,
       useClass: PrismaCategoriesRepository,
@@ -29,7 +33,7 @@ import { SellersRepository } from '@/domain/marketplace/application/repositories
   ],
   exports: [
     PrismaService,
-    PrismaAttachmentsRepository,
+    AttachmentsRepository,
     CategoriesRepository,
     PrismaProductAttachmentsRepository,
     PrismaProductsRepository,
