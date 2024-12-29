@@ -17,6 +17,7 @@ model User {
 
     avatar   Attachment? @relation(fields: [avatarId], references: [id])
     products Product[]   @relation(name: "product_owner")
+    View     View[]
 
     @@map("users")
 }
@@ -44,6 +45,7 @@ model Product {
     owner       User         @relation(name: "product_owner", fields: [ownerId], references: [id])
     category    Category     @relation(fields: [categoryId], references: [id])
     attachments Attachment[]
+    View        View[]
 
     @@map("products")
 }
@@ -56,4 +58,17 @@ model Category {
     products Product[]
 
     @@map("categories")
+}
+
+model View {
+    id        String   @id @default(uuid())
+    viewerId  String   @map("viewer_id")
+    productId String   @map("product_id")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    viewer  User    @relation(fields: [viewerId], references: [id])
+    product Product @relation(fields: [productId], references: [id])
+
+    @@unique([viewerId, productId])
+    @@map("views")
 }
