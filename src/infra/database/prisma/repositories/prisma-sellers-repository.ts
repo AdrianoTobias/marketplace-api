@@ -50,6 +50,17 @@ export class PrismaSellersRepository implements SellersRepository {
     return PrismaSellerMapper.toDomain(seller)
   }
 
+  async save(seller: Seller): Promise<void> {
+    const data = PrismaSellerMapper.toPrisma(seller)
+
+    await this.prisma.user.update({
+      where: {
+        id: seller.id.toString(),
+      },
+      data,
+    })
+  }
+
   async create(seller: Seller): Promise<void> {
     const data = PrismaSellerMapper.toPrisma(seller)
 

@@ -34,6 +34,12 @@ export class InMemorySellersRepository implements SellersRepository {
     return seller
   }
 
+  async save(seller: Seller) {
+    const itemIndex = this.items.findIndex((item) => item.id === seller.id)
+
+    this.items[itemIndex] = seller
+  }
+
   async create(seller: Seller) {
     this.items.push(seller)
   }
