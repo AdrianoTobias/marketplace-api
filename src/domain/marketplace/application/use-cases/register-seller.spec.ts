@@ -7,6 +7,7 @@ import { PhoneAlreadyExistsError } from './errors/phone-already-exists-error'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { makeAttachment } from 'test/factories/make-attachment'
+import { InvalidPasswordConfirmationError } from './errors/invalid-password-confirmation-error'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -32,7 +33,9 @@ describe('Register Seller', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
+      avatarId: null,
       password: '123456',
+      passwordConfirmation: '123456',
     })
 
     expect(result.isRight()).toBe(true)
@@ -50,8 +53,9 @@ describe('Register Seller', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
-      password: '123456',
       avatarId: avatar.id.toString(),
+      password: '123456',
+      passwordConfirmation: '123456',
     })
 
     expect(result.isRight()).toBe(true)
@@ -65,13 +69,32 @@ describe('Register Seller', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
+      avatarId: null,
       password: '123456',
+      passwordConfirmation: '123456',
     })
 
     const hashedPassword = await fakeHasher.hash('123456')
 
     expect(result.isRight()).toBe(true)
     expect(inMemorySellersRepository.items[0].password).toEqual(hashedPassword)
+  })
+
+  it('should not be able to register a seller with an invalid password confirmation', async () => {
+    const seller = makeSeller({ email: 'johndoe@example.com' })
+    await inMemorySellersRepository.create(seller)
+
+    const result = await sut.execute({
+      name: 'John Doe',
+      phone: '123456789',
+      email: 'johndoe@example.com',
+      avatarId: null,
+      password: '123456',
+      passwordConfirmation: '456789',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(InvalidPasswordConfirmationError)
   })
 
   it('should not be able to register a seller with an already registered email', async () => {
@@ -82,7 +105,9 @@ describe('Register Seller', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
+      avatarId: null,
       password: '123456',
+      passwordConfirmation: '123456',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -97,7 +122,9 @@ describe('Register Seller', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
+      avatarId: null,
       password: '123456',
+      passwordConfirmation: '123456',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -109,8 +136,9 @@ describe('Register Seller', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
-      password: '123456',
       avatarId: 'invalid-avatar',
+      password: '123456',
+      passwordConfirmation: '123456',
     })
 
     expect(result.isLeft()).toBe(true)

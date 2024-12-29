@@ -7,17 +7,25 @@ import { EmailAlreadyExistsError } from './errors/email-already-exists-error'
 import { PhoneAlreadyExistsError } from './errors/phone-already-exists-error'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
+import { UserAttachmentList } from '../../enterprise/entities/user/user-attachment-list'
+import { UserAttachment } from '../../enterprise/entities/user/user-attachment'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { InvalidPasswordConfirmationError } from './errors/invalid-password-confirmation-error'
 
 interface RegisterSellerUseCaseRequest {
   name: string
   phone: string
   email: string
+  avatarId: string | null
   password: string
-  avatarId?: string
+  passwordConfirmation: string
 }
 
 type RegisterSellerUseCaseResponse = Either<
-  EmailAlreadyExistsError | PhoneAlreadyExistsError | ResourceNotFoundError,
+  | InvalidPasswordConfirmationError
+  | EmailAlreadyExistsError
+  | PhoneAlreadyExistsError
+  | ResourceNotFoundError,
   {
     seller: Seller
   }
@@ -35,9 +43,14 @@ export class RegisterSellerUseCase {
     name,
     phone,
     email,
-    password,
     avatarId,
+    password,
+    passwordConfirmation,
   }: RegisterSellerUseCaseRequest): Promise<RegisterSellerUseCaseResponse> {
+    if (password !== passwordConfirmation) {
+      return left(new InvalidPasswordConfirmationError())
+    }
+
     const sellerWithSameEmail = await this.sellersRepository.findByEmail(email)
 
     if (sellerWithSameEmail) {
@@ -50,11 +63,11 @@ export class RegisterSellerUseCase {
       return left(new PhoneAlreadyExistsError(phone))
     }
 
-    const avatar = avatarId
+    const attachment = avatarId
       ? await this.attachmentsRepository.findById(avatarId)
       : null
 
-    if (avatarId && !avatar) {
+    if (avatarId && !attachment) {
       return left(new ResourceNotFoundError())
     }
 
@@ -65,8 +78,16 @@ export class RegisterSellerUseCase {
       phone,
       email,
       password: hashedPassword,
-      avatar,
     })
+
+    if (avatarId) {
+      const userAttachment = UserAttachment.create({
+        attachmentId: new UniqueEntityID(avatarId),
+        userId: seller.id,
+      })
+
+      seller.avatar = new UserAttachmentList([userAttachment])
+    }
 
     await this.sellersRepository.create(seller)
 

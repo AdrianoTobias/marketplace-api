@@ -18,7 +18,9 @@ const resgisterSellerBodySchema = z.object({
   name: z.string(),
   phone: z.string(),
   email: z.string().email(),
+  avatarId: z.string().uuid().nullable(),
   password: z.string(),
+  passwordConfirmation: z.string(),
 })
 
 type ResgisterSellerBodySchema = z.infer<typeof resgisterSellerBodySchema>
@@ -32,13 +34,16 @@ export class ResgisterSellerController {
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(resgisterSellerBodySchema))
   async handle(@Body() body: ResgisterSellerBodySchema) {
-    const { name, phone, email, password } = body
+    const { name, phone, email, avatarId, password, passwordConfirmation } =
+      body
 
     const result = await this.registerSeller.execute({
       name,
       phone,
       email,
+      avatarId,
       password,
+      passwordConfirmation,
     })
 
     if (result.isLeft()) {

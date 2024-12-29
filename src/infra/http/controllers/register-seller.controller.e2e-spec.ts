@@ -25,7 +25,9 @@ describe('Register seller (E2E)', () => {
       name: 'John Doe',
       phone: '123456789',
       email: 'johndoe@example.com',
+      avatarId: null,
       password: '123456',
+      passwordConfirmation: '123456',
     })
 
     expect(response.statusCode).toBe(201)
