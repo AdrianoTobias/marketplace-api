@@ -85,12 +85,16 @@ export class Product extends AggregateRoot<ProductProps> {
   }
 
   static create(
-    props: Optional<ProductProps, 'status' | 'createdAt' | 'statusAt'>,
+    props: Optional<
+      ProductProps,
+      'status' | 'attachments' | 'createdAt' | 'statusAt'
+    >,
     id?: UniqueEntityID,
   ) {
     const product = new Product(
       {
         ...props,
+        attachments: props.attachments ?? new ProductAttachmentList(),
         createdAt: props.createdAt ?? new Date(),
         status: props.status ?? ProductStatus.AVAILABLE,
         statusAt: props.statusAt ?? new Date(),
