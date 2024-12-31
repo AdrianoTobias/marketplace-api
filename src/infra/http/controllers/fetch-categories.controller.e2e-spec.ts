@@ -1,53 +1,46 @@
 import { AppModule } from '@/infra/app.module'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { DatabaseModule } from '@/infra/database/database-module'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
+import { CategoryFactory } from 'test/factories/make-category'
+import { SellerFactory } from 'test/factories/make-seller'
 
 describe('Fetch categories (E2E)', () => {
   let app: INestApplication
-  let prisma: PrismaService
+  let sellerFactory: SellerFactory
+  let categoryFactory: CategoryFactory
   let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, DatabaseModule],
+      providers: [SellerFactory, CategoryFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
-    prisma = moduleRef.get(PrismaService)
+    sellerFactory = moduleRef.get(SellerFactory)
+    categoryFactory = moduleRef.get(CategoryFactory)
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
   test('[GET] /categories', async () => {
-    const user = await prisma.user.create({
-      data: {
-        name: 'John Doe',
-        phone: '123456789',
-        email: 'johndoe@example.com',
-        avatarId: null,
-        password: '123456',
-      },
-    })
+    const user = await sellerFactory.makePrismaSeller()
 
-    const accessToken = jwt.sign({ sub: user.id })
+    const accessToken = jwt.sign({ sub: user.id.toString() })
 
-    await prisma.category.createMany({
-      data: [
-        {
-          title: 'Category 01',
-          slug: 'category-01',
-        },
-        {
-          title: 'Category 02',
-          slug: 'category-02',
-        },
-      ],
-    })
+    await Promise.all([
+      categoryFactory.makePrismaCategory({
+        title: 'Category 01',
+      }),
+      categoryFactory.makePrismaCategory({
+        title: 'Category 02',
+      }),
+    ])
 
     const response = await request(app.getHttpServer())
       .get('/categories')
@@ -56,10 +49,10 @@ describe('Fetch categories (E2E)', () => {
     console.log(response)
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual({
-      categories: [
+      categories: expect.arrayContaining([
         expect.objectContaining({ slug: 'category-01' }),
         expect.objectContaining({ slug: 'category-02' }),
-      ],
+      ]),
     })
   })
 })
