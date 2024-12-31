@@ -5,26 +5,102 @@ import {
 } from '@/domain/marketplace/application/repositories/views-repository'
 import { View } from '@/domain/marketplace/enterprise/entities/view'
 import { Injectable } from '@nestjs/common'
+import { PrismaViewMapper } from '../mappers/prisma-view-mapper'
+import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaViewsRepository implements ViewsRepository {
-  count(params: Count): Promise<number> {
-    throw new Error('Method not implemented.')
+  constructor(private prisma: PrismaService) {}
+
+  async count({ sellerId, productId, from }: Count): Promise<number> {
+    const where: Record<string, unknown> = {
+      sellerId,
+    }
+
+    if (productId) {
+      where.productId = productId
+    }
+
+    if (from) {
+      where.statusAt = { gte: from }
+    }
+
+    const amount = await this.prisma.view.count({
+      where,
+    })
+
+    return amount
   }
 
-  countPerDay(params: Count): Promise<ViewsPerDay[]> {
-    throw new Error('Method not implemented.')
+  async countPerDay({
+    sellerId,
+    productId,
+    from,
+  }: Count): Promise<ViewsPerDay[]> {
+    const where: Record<string, unknown> = {
+      sellerId,
+    }
+
+    if (productId) {
+      where.productId = productId
+    }
+
+    if (from) {
+      where.statusAt = { gte: from }
+    }
+
+    const groupedResults = await this.prisma.view.groupBy({
+      by: ['createdAt'],
+      where,
+      _count: {
+        _all: true,
+      },
+    })
+
+    return groupedResults.map((result) => ({
+      date: result.createdAt,
+      amount: result._count._all,
+    }))
   }
 
-  findById(id: string): Promise<View | null> {
-    throw new Error('Method not implemented.')
+  async findById(id: string): Promise<View | null> {
+    const view = await this.prisma.view.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        viewer: true,
+        product: true,
+      },
+    })
+
+    if (!view) {
+      return null
+    }
+
+    return PrismaViewMapper.toDomain(view)
   }
 
-  isViewed(view: View): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async isViewed({ viewer, product }: View): Promise<boolean> {
+    const view = await this.prisma.view.findUnique({
+      where: {
+        viewerId_productId: {
+          viewerId: viewer.id.toString(),
+          productId: product.id.toString(),
+        },
+      },
+    })
+
+    return !!view
   }
 
-  create(view: View): Promise<View> {
-    throw new Error('Method not implemented.')
+  async create(view: View): Promise<View> {
+    const data = PrismaViewMapper.toPrisma(view)
+
+    await this.prisma.view.create({
+      data,
+    })
+
+    return view
   }
 }

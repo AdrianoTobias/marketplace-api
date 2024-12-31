@@ -6,30 +6,114 @@ import {
 } from '@/domain/marketplace/application/repositories/products-repository'
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { Injectable } from '@nestjs/common'
+import { PrismaProductMapper } from '../mappers/prisma-product-mapper'
+import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaProductsRepository implements ProductsRepository {
-  count(params: Count): Promise<number> {
-    throw new Error('Method not implemented.')
+  constructor(private prisma: PrismaService) {}
+
+  async count({ sellerId, from, status }: Count): Promise<number> {
+    const where: Record<string, unknown> = {
+      sellerId,
+    }
+
+    if (from) {
+      where.statusAt = { gte: from }
+    }
+
+    if (status) {
+      where.status = status
+    }
+
+    const amount = await this.prisma.product.count({
+      where,
+    })
+
+    return amount
   }
 
-  findById(id: string): Promise<Product | null> {
-    throw new Error('Method not implemented.')
+  async findById(id: string): Promise<Product | null> {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!product) {
+      return null
+    }
+
+    return PrismaProductMapper.toDomain(product)
   }
 
-  findManyByOwner(params: FindManyByOwner): Promise<Product[]> {
-    throw new Error('Method not implemented.')
+  async findManyByOwner({
+    ownerId,
+    search,
+    status,
+  }: FindManyByOwner): Promise<Product[]> {
+    const products = await this.prisma.product.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        ownerId,
+        ...(search
+          ? {
+              OR: [
+                { title: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+        ...(status ? { status } : {}),
+      },
+    })
+
+    return products.map(PrismaProductMapper.toDomain)
   }
 
-  findMany(params: FindMany): Promise<Product[]> {
-    throw new Error('Method not implemented.')
+  async findMany({ page, search, status }: FindMany): Promise<Product[]> {
+    const perPage = 3
+
+    const products = await this.prisma.product.findMany({
+      take: perPage,
+      skip: (page - 1) * perPage,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        ...(search
+          ? {
+              OR: [
+                { title: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+        ...(status ? { status } : {}),
+      },
+    })
+
+    return products.map(PrismaProductMapper.toDomain)
   }
 
-  save(product: Product): Promise<void> {
-    throw new Error('Method not implemented.')
+  async save(product: Product): Promise<void> {
+    const data = PrismaProductMapper.toPrisma(product)
+
+    await this.prisma.product.update({
+      where: {
+        id: product.id.toString(),
+      },
+      data,
+    })
   }
 
-  create(product: Product): Promise<void> {
-    throw new Error('Method not implemented.')
+  async create(product: Product): Promise<void> {
+    const data = PrismaProductMapper.toPrisma(product)
+
+    await this.prisma.product.create({
+      data,
+    })
   }
 }
