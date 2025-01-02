@@ -1,35 +1,32 @@
 import { AppModule } from '@/infra/app.module'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { DatabaseModule } from '@/infra/database/database-module'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { hash } from 'bcryptjs'
 import request from 'supertest'
+import { SellerFactory } from 'test/factories/make-seller'
 
 describe('Authenticate seller (E2E)', () => {
   let app: INestApplication
-  let prisma: PrismaService
+  let sellerFactory: SellerFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, DatabaseModule],
+      providers: [SellerFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
-    prisma = moduleRef.get(PrismaService)
+    sellerFactory = moduleRef.get(SellerFactory)
 
     await app.init()
   })
 
   test('[POST] /sellers/sessions', async () => {
-    await prisma.user.create({
-      data: {
-        name: 'John Doe',
-        phone: '123456789',
-        email: 'johndoe@example.com',
-        avatarId: null,
-        password: await hash('123456', 8),
-      },
+    await sellerFactory.makePrismaSeller({
+      email: 'johndoe@example.com',
+      password: await hash('123456', 8),
     })
 
     const response = await request(app.getHttpServer())
