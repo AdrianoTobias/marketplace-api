@@ -16,6 +16,19 @@ Content-Type: application/json
 
 ###
 
+# @name edit_seller
+PUT {{baseUrl}}/sellers
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"name": "Teste 1 edited",
+  "phone": "0123456789",
+	"email": "edited@teste.com.br"
+}
+
+###
+
 # @name get_seller_profile
 GET {{baseUrl}}/sellers/me
 Content-Type: application/json

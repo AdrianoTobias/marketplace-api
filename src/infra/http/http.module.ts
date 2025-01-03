@@ -14,11 +14,14 @@ import { RegisterSellerUseCase } from '@/domain/marketplace/application/use-case
 import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-cases/authenticate-seller'
 import { GetSellerProfileController } from './controllers/get-seller-profile.controller'
 import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-cases/get-seller-profile'
+import { EditSellerController } from './controllers/edit-seller.controller'
+import { EditSellerUseCase } from '@/domain/marketplace/application/use-cases/edit-seller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
     RegisterSellerController,
+    EditSellerController,
     GetSellerProfileController,
     AuthenticateSellerController,
     CreateCategoryController,
@@ -27,10 +30,11 @@ import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-ca
     FetchRecentProductsController,
   ],
   providers: [
+    RegisterSellerUseCase,
+    EditSellerUseCase,
     GetSellerProfileUseCase,
     CreateCategoryUseCase,
     FetchAllCategoriesUseCase,
-    RegisterSellerUseCase,
     AuthenticateSellerUseCase,
   ],
 })
