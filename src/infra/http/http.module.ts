@@ -12,11 +12,14 @@ import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { RegisterSellerUseCase } from '@/domain/marketplace/application/use-cases/register-seller'
 import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-cases/authenticate-seller'
+import { GetSellerProfileController } from './controllers/get-seller-profile.controller'
+import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-cases/get-seller-profile'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
     ResgisterSellerController,
+    GetSellerProfileController,
     AuthenticateSellerController,
     CreateCategoryController,
     CreateProductController,
@@ -24,6 +27,7 @@ import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-
     FetchRecentProductsController,
   ],
   providers: [
+    GetSellerProfileUseCase,
     CreateCategoryUseCase,
     FetchAllCategoriesUseCase,
     RegisterSellerUseCase,

@@ -9,8 +9,17 @@ Content-Type: application/json
 	"name": "Teste 2",
   "phone": "1234567892",
 	"email": "teste2@teste.com.br",
-	"password": "123456"
+  "avatarId": null,
+	"password": "123456",
+  "passwordConfirmation": "123456"  
 }
+
+###
+
+# @name get_seller_profile
+GET {{baseUrl}}/sellers/me
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 ###
 

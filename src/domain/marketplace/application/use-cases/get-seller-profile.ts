@@ -2,6 +2,7 @@ import { Seller } from '@/domain/marketplace/enterprise/entities/user/seller'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 
 interface GetSellerProfileUseCaseRequest {
   id: string
@@ -14,6 +15,7 @@ type GetSellerProfileUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class GetSellerProfileUseCase {
   constructor(private sellersRepository: SellersRepository) {}
 
