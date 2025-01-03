@@ -1,9 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { z } from 'zod'
+import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product'
+import { ProductPresenter } from '../presenters/product-presenter'
 
 const createProductBodySchema = z.object({
   title: z.string(),
@@ -19,7 +20,7 @@ type CreateProductBodySchema = z.infer<typeof createProductBodySchema>
 
 @Controller('/products')
 export class CreateProductController {
-  constructor(private prisma: PrismaService) {}
+  constructor(private createProductUseCase: CreateProductUseCase) {}
 
   @Post()
   async handle(
@@ -29,21 +30,20 @@ export class CreateProductController {
     const { title, categoryId, description, priceInCents, attachmentsIds } =
       body
     const userId = user.sub
-    const status = 'available'
 
-    await this.prisma.product.create({
-      data: {
-        ownerId: userId,
-        title,
-        description,
-        priceInCents,
-        status,
-        categoryId,
-        // attachments: attachmentsIds,
-        attachments: {
-          connect: attachmentsIds.map((id) => ({ id })),
-        },
-      },
+    const result = await this.createProductUseCase.execute({
+      ownerId: userId,
+      title,
+      description,
+      priceInCents,
+      categoryId,
+      attachmentsIds,
     })
+
+    if (result.isLeft()) {
+      throw new BadRequestException()
+    }
+
+    return { product: ProductPresenter.toHTTP(result.value.product) }
   }
 }

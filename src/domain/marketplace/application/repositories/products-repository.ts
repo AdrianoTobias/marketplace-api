@@ -18,11 +18,11 @@ export interface FindMany extends PaginationParams {
   status?: Product['status']
 }
 
-export interface ProductsRepository {
-  count(params: Count): Promise<number>
-  findById(id: string): Promise<Product | null>
-  findManyByOwner(params: FindManyByOwner): Promise<Product[]>
-  findMany(params: FindMany): Promise<Product[]>
-  save(product: Product): Promise<void>
-  create(product: Product): Promise<void>
+export abstract class ProductsRepository {
+  abstract count(params: Count): Promise<number>
+  abstract findById(id: string): Promise<Product | null>
+  abstract findManyByOwner(params: FindManyByOwner): Promise<Product[]>
+  abstract findMany(params: FindMany): Promise<Product[]>
+  abstract save(product: Product): Promise<void>
+  abstract create(product: Product): Promise<void>
 }

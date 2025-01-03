@@ -8,6 +8,7 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
+import { Injectable } from '@nestjs/common'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -25,6 +26,7 @@ type CreateProductUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateProductUseCase {
   constructor(
     private sellersRepository: SellersRepository,
