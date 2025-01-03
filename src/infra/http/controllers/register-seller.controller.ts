@@ -14,7 +14,7 @@ import { EmailAlreadyExistsError } from '@/domain/marketplace/application/use-ca
 import { PhoneAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/phone-already-exists-error'
 import { Public } from '@/infra/auth/public'
 
-const resgisterSellerBodySchema = z.object({
+const registerSellerBodySchema = z.object({
   name: z.string(),
   phone: z.string(),
   email: z.string().email(),
@@ -23,17 +23,17 @@ const resgisterSellerBodySchema = z.object({
   passwordConfirmation: z.string(),
 })
 
-type ResgisterSellerBodySchema = z.infer<typeof resgisterSellerBodySchema>
+type RegisterSellerBodySchema = z.infer<typeof registerSellerBodySchema>
 
 @Controller('/sellers')
 @Public()
-export class ResgisterSellerController {
+export class RegisterSellerController {
   constructor(private registerSeller: RegisterSellerUseCase) {}
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(resgisterSellerBodySchema))
-  async handle(@Body() body: ResgisterSellerBodySchema) {
+  @UsePipes(new ZodValidationPipe(registerSellerBodySchema))
+  async handle(@Body() body: RegisterSellerBodySchema) {
     const { name, phone, email, avatarId, password, passwordConfirmation } =
       body
 

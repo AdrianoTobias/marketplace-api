@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { AuthenticateSellerController } from './controllers/authenticate-seller.controller'
-import { ResgisterSellerController } from './controllers/register-seller.controller'
+import { RegisterSellerController } from './controllers/register-seller.controller'
 import { CreateCategoryController } from './controllers/create-category.controller'
 import { CreateProductController } from './controllers/create-product.controller'
 import { FetchRecentQuestionsController } from './controllers/fetch-categories.controller'
@@ -18,7 +18,7 @@ import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-ca
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
-    ResgisterSellerController,
+    RegisterSellerController,
     GetSellerProfileController,
     AuthenticateSellerController,
     CreateCategoryController,
