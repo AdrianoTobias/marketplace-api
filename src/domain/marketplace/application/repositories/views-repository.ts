@@ -11,10 +11,10 @@ export interface ViewsPerDay {
   amount: number
 }
 
-export interface ViewsRepository {
-  count(params: Count): Promise<number>
-  countPerDay(params: Count): Promise<ViewsPerDay[]>
-  findById(id: string): Promise<View | null>
-  isViewed(view: View): Promise<boolean>
-  create(view: View): Promise<View>
+export abstract class ViewsRepository {
+  abstract count(params: Count): Promise<number>
+  abstract countPerDay(params: Count): Promise<ViewsPerDay[]>
+  abstract findById(id: string): Promise<View | null>
+  abstract isViewed(view: View): Promise<boolean>
+  abstract create(view: View): Promise<View>
 }

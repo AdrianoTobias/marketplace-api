@@ -14,6 +14,8 @@ import { PrismaUserAttachmentsRepository } from './prisma/repositories/prisma-us
 import { UserAttachmentsRepository } from '@/domain/marketplace/application/repositories/user-attachments-repository'
 import { ProductsRepository } from '@/domain/marketplace/application/repositories/products-repository'
 import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
+import { ViewersRepository } from '@/domain/marketplace/application/repositories/viewers-repository'
+import { ViewsRepository } from '@/domain/marketplace/application/repositories/views-repository'
 
 @Module({
   providers: [
@@ -43,8 +45,14 @@ import { ProductAttachmentsRepository } from '@/domain/marketplace/application/r
       provide: SellersRepository,
       useClass: PrismaSellersRepository,
     },
-    PrismaViewersRepository,
-    PrismaViewsRepository,
+    {
+      provide: ViewersRepository,
+      useClass: PrismaViewersRepository,
+    },
+    {
+      provide: ViewsRepository,
+      useClass: PrismaViewsRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -54,8 +62,8 @@ import { ProductAttachmentsRepository } from '@/domain/marketplace/application/r
     ProductAttachmentsRepository,
     ProductsRepository,
     SellersRepository,
-    PrismaViewersRepository,
-    PrismaViewsRepository,
+    ViewersRepository,
+    ViewsRepository,
   ],
 })
 export class DatabaseModule {}

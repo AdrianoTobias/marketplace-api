@@ -121,6 +121,13 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name register_product_view
+POST {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea/views
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
 # @name fetch_recent_products
 GET {{baseUrl}}/products?page=1&search=3&status=available
 Content-Type: application/json
