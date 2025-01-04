@@ -5,7 +5,7 @@ import { RegisterSellerController } from './controllers/register-seller.controll
 import { CreateCategoryController } from './controllers/create-category.controller'
 import { CreateProductController } from './controllers/create-product.controller'
 import { FetchRecentQuestionsController } from './controllers/fetch-categories.controller'
-import { FetchRecentProductsController } from './controllers/fetch-recent-products.controller'
+import { FetchAllProductsController } from './controllers/fetch-all-products.controller'
 import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
 import { DatabaseModule } from '../database/database-module'
 import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
@@ -25,6 +25,7 @@ import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use
 import { ChangeProductStatusController } from './controllers/change-product-status.controller'
 import { FetchProductsByOwnerIdUseCase } from '@/domain/marketplace/application/use-cases/fetch-products-by-owner'
 import { FetchProductsByOwnerController } from './controllers/fetch-products-by-owner.controller'
+import { FetchAllProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-products'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -40,7 +41,7 @@ import { FetchProductsByOwnerController } from './controllers/fetch-products-by-
     EditProductController,
     ChangeProductStatusController,
     FetchRecentQuestionsController,
-    FetchRecentProductsController,
+    FetchAllProductsController,
   ],
   providers: [
     RegisterSellerUseCase,
@@ -48,6 +49,7 @@ import { FetchProductsByOwnerController } from './controllers/fetch-products-by-
     GetSellerProfileUseCase,
     CreateCategoryUseCase,
     CreateProductUseCase,
+    FetchAllProductsUseCase,
     FetchProductsByOwnerIdUseCase,
     GetProductByIdUseCase,
     EditProductUseCase,

@@ -80,6 +80,12 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name fetch_all_products
+GET {{baseUrl}}/products/?page=2
+Content-Type: application/json
+
+###
+
 # @name fetch_product_by_owner
 GET {{baseUrl}}/products/me?status=sold&search=3
 Content-Type: application/json
