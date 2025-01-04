@@ -12,7 +12,7 @@ export class PrismaProductMapper {
         title: raw.title,
         description: raw.description,
         priceInCents: raw.priceInCents,
-        status: ProductStatus[raw.status],
+        status: ProductStatus[raw.status.toUpperCase()],
         ownerId: new UniqueEntityID(raw.ownerId),
         categoryId: new UniqueEntityID(raw.categoryId),
         createdAt: raw.createdAt,

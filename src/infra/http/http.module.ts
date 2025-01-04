@@ -21,6 +21,8 @@ import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/e
 import { EditProductController } from './controllers/edit-product.controller'
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id'
 import { GetProductByIdController } from './controllers/get-product-by-id.controller'
+import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use-cases/change-product-status'
+import { ChangeProductStatusController } from './controllers/change-product-status.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -33,6 +35,7 @@ import { GetProductByIdController } from './controllers/get-product-by-id.contro
     CreateProductController,
     GetProductByIdController,
     EditProductController,
+    ChangeProductStatusController,
     FetchRecentQuestionsController,
     FetchRecentProductsController,
   ],
@@ -44,6 +47,7 @@ import { GetProductByIdController } from './controllers/get-product-by-id.contro
     CreateProductUseCase,
     GetProductByIdUseCase,
     EditProductUseCase,
+    ChangeProductStatusUseCase,
     FetchAllCategoriesUseCase,
     AuthenticateSellerUseCase,
   ],

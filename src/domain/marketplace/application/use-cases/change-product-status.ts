@@ -7,6 +7,7 @@ import { SellersRepository } from '../repositories/sellers-repository'
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
+import { Injectable } from '@nestjs/common'
 
 interface ChangeProductStatusUseCaseRequest {
   productId: string
@@ -21,6 +22,7 @@ type ChangeProductStatusUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class ChangeProductStatusUseCase {
   constructor(
     private sellersRepository: SellersRepository,
@@ -44,7 +46,7 @@ export class ChangeProductStatusUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (seller.id !== product.ownerId) {
+    if (seller.id.toString() !== product.ownerId.toString()) {
       return left(new NotAllowedError())
     }
 
