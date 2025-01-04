@@ -80,6 +80,21 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name edit_product
+PUT {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Edited product",
+  "description": "Edited description",
+  "priceInCents": 1234,
+  "categoryId": "92b7b838-5a9b-40e7-8171-2eadbc5c6b4b",
+  "attachmentsIds": []
+}
+
+###
+
 # @name fetch_recent_products
 GET {{baseUrl}}/products?page=1&search=3&status=available
 Content-Type: application/json

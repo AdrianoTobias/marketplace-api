@@ -13,6 +13,7 @@ import { AttachmentsRepository } from '@/domain/marketplace/application/reposito
 import { PrismaUserAttachmentsRepository } from './prisma/repositories/prisma-user-attachments-repository'
 import { UserAttachmentsRepository } from '@/domain/marketplace/application/repositories/user-attachments-repository'
 import { ProductsRepository } from '@/domain/marketplace/application/repositories/products-repository'
+import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
 
 @Module({
   providers: [
@@ -29,7 +30,10 @@ import { ProductsRepository } from '@/domain/marketplace/application/repositorie
       provide: CategoriesRepository,
       useClass: PrismaCategoriesRepository,
     },
-    PrismaProductAttachmentsRepository,
+    {
+      provide: ProductAttachmentsRepository,
+      useClass: PrismaProductAttachmentsRepository,
+    },
     {
       provide: ProductsRepository,
       useClass: PrismaProductsRepository,
@@ -47,7 +51,7 @@ import { ProductsRepository } from '@/domain/marketplace/application/repositorie
     AttachmentsRepository,
     UserAttachmentsRepository,
     CategoriesRepository,
-    PrismaProductAttachmentsRepository,
+    ProductAttachmentsRepository,
     ProductsRepository,
     SellersRepository,
     PrismaViewersRepository,

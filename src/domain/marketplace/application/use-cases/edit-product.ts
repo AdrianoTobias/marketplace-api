@@ -13,6 +13,7 @@ import { ProductAttachmentsRepository } from '../repositories/product-attachment
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
 import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Injectable } from '@nestjs/common'
 
 interface EditProductUseCaseRequest {
   productId: string
@@ -31,6 +32,7 @@ type EditProductUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class EditProductUseCase {
   constructor(
     private sellersRepository: SellersRepository,
@@ -61,7 +63,7 @@ export class EditProductUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (seller.id !== product.ownerId) {
+    if (seller.id.toString() !== product.ownerId.toString()) {
       return left(new NotAllowedError())
     }
 
