@@ -23,6 +23,8 @@ import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-case
 import { GetProductByIdController } from './controllers/get-product-by-id.controller'
 import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use-cases/change-product-status'
 import { ChangeProductStatusController } from './controllers/change-product-status.controller'
+import { FetchProductsByOwnerIdUseCase } from '@/domain/marketplace/application/use-cases/fetch-products-by-owner'
+import { FetchProductsByOwnerController } from './controllers/fetch-products-by-owner.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -33,6 +35,7 @@ import { ChangeProductStatusController } from './controllers/change-product-stat
     AuthenticateSellerController,
     CreateCategoryController,
     CreateProductController,
+    FetchProductsByOwnerController,
     GetProductByIdController,
     EditProductController,
     ChangeProductStatusController,
@@ -45,6 +48,7 @@ import { ChangeProductStatusController } from './controllers/change-product-stat
     GetSellerProfileUseCase,
     CreateCategoryUseCase,
     CreateProductUseCase,
+    FetchProductsByOwnerIdUseCase,
     GetProductByIdUseCase,
     EditProductUseCase,
     ChangeProductStatusUseCase,

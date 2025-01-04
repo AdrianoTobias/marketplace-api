@@ -80,6 +80,13 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name fetch_product_by_owner
+GET {{baseUrl}}/products/me?status=sold&search=3
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
 # @name get_product_bt_id
 GET {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea
 Content-Type: application/json
