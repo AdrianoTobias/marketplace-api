@@ -4,7 +4,7 @@ import { AuthenticateSellerController } from './controllers/authenticate-seller.
 import { RegisterSellerController } from './controllers/register-seller.controller'
 import { CreateCategoryController } from './controllers/create-category.controller'
 import { CreateProductController } from './controllers/create-product.controller'
-import { FetchRecentQuestionsController } from './controllers/fetch-categories.controller'
+import { FetchAllCategoriesController } from './controllers/fetch-all-categories.controller'
 import { FetchAllProductsController } from './controllers/fetch-all-products.controller'
 import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
 import { DatabaseModule } from '../database/database-module'
@@ -40,7 +40,7 @@ import { FetchAllProductsUseCase } from '@/domain/marketplace/application/use-ca
     GetProductByIdController,
     EditProductController,
     ChangeProductStatusController,
-    FetchRecentQuestionsController,
+    FetchAllCategoriesController,
     FetchAllProductsController,
   ],
   providers: [

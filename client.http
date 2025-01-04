@@ -58,7 +58,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetch_categories
+# @name fetch_all_categories
 GET {{baseUrl}}/categories
 Content-Type: application/json
 Authorization: Bearer {{authToken}}

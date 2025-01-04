@@ -3,7 +3,7 @@ import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-
 import { CategoryPresenter } from '../presenters/category-presenter'
 
 @Controller('/categories')
-export class FetchRecentQuestionsController {
+export class FetchAllCategoriesController {
   constructor(private fetchAllCategories: FetchAllCategoriesUseCase) {}
 
   @Get()
