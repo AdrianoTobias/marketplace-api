@@ -30,6 +30,7 @@ import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use
 import { RegisterProductViewController } from './controllers/register-product-view.controller'
 import { CountSellerProductsUseCase } from '@/domain/marketplace/application/use-cases/count-seller-products'
 import { CountProductsSoldBySellerInLast30DaysController } from './controllers/count-products-sold-by-seller-in-last-30-days.controller'
+import { CountProductsAvailableBySellerInLast30DaysController } from './controllers/count-products-available-by-seller-in-last-30-days.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -38,6 +39,7 @@ import { CountProductsSoldBySellerInLast30DaysController } from './controllers/c
     EditSellerController,
     GetSellerProfileController,
     CountProductsSoldBySellerInLast30DaysController,
+    CountProductsAvailableBySellerInLast30DaysController,
     AuthenticateSellerController,
     CreateCategoryController,
     CreateProductController,
