@@ -28,6 +28,8 @@ import { FetchProductsByOwnerController } from './controllers/fetch-products-by-
 import { FetchAllProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-products'
 import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use-cases/register-product-view'
 import { RegisterProductViewController } from './controllers/register-product-view.controller'
+import { CountSellerProductsUseCase } from '@/domain/marketplace/application/use-cases/count-seller-products'
+import { CountProductsSoldBySellerInLast30DaysController } from './controllers/count-products-sold-by-seller-in-last-30-days.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -35,6 +37,7 @@ import { RegisterProductViewController } from './controllers/register-product-vi
     RegisterSellerController,
     EditSellerController,
     GetSellerProfileController,
+    CountProductsSoldBySellerInLast30DaysController,
     AuthenticateSellerController,
     CreateCategoryController,
     CreateProductController,
@@ -50,6 +53,7 @@ import { RegisterProductViewController } from './controllers/register-product-vi
     RegisterSellerUseCase,
     EditSellerUseCase,
     GetSellerProfileUseCase,
+    CountSellerProductsUseCase,
     CreateCategoryUseCase,
     CreateProductUseCase,
     FetchAllProductsUseCase,

@@ -15,11 +15,11 @@ export class PrismaProductsRepository implements ProductsRepository {
 
   async count({ sellerId, from, status }: Count): Promise<number> {
     const where: Record<string, unknown> = {
-      sellerId,
+      ownerId: sellerId,
     }
 
     if (from) {
-      where.statusAt = { gte: from }
+      where.statusAt = { gte: new Date(from.toISOString().split('T')[0]) }
     }
 
     if (status) {
