@@ -7,14 +7,17 @@ import { View } from '@/domain/marketplace/enterprise/entities/view'
 import { Injectable } from '@nestjs/common'
 import { PrismaViewMapper } from '../mappers/prisma-view-mapper'
 import { PrismaService } from '../prisma.service'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class PrismaViewsRepository implements ViewsRepository {
   constructor(private prisma: PrismaService) {}
 
   async count({ sellerId, productId, from }: Count): Promise<number> {
-    const where: Record<string, unknown> = {
-      sellerId,
+    const where: Prisma.ViewWhereInput = {
+      product: {
+        ownerId: sellerId,
+      },
     }
 
     if (productId) {
@@ -22,7 +25,7 @@ export class PrismaViewsRepository implements ViewsRepository {
     }
 
     if (from) {
-      where.statusAt = { gte: from }
+      where.createdAt = { gte: new Date(from.toISOString().split('T')[0]) }
     }
 
     const amount = await this.prisma.view.count({

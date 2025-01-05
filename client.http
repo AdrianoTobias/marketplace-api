@@ -50,6 +50,15 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+###
+
+# @name count_seller_views_in_last_30_days
+GET {{baseUrl}}/sellers/metrics/views
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
 # @name authenticate_seller
 POST {{baseUrl}}/sellers/sessions
 Content-Type: application/json

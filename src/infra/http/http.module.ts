@@ -31,6 +31,8 @@ import { RegisterProductViewController } from './controllers/register-product-vi
 import { CountSellerProductsUseCase } from '@/domain/marketplace/application/use-cases/count-seller-products'
 import { CountProductsSoldBySellerInLast30DaysController } from './controllers/count-products-sold-by-seller-in-last-30-days.controller'
 import { CountProductsAvailableBySellerInLast30DaysController } from './controllers/count-products-available-by-seller-in-last-30-days.controller'
+import { CountSellerViewsBySellerInLast30DaysController } from './controllers/count-seller-views-in-last-30-days.controller'
+import { CountSellerViewsUseCase } from '@/domain/marketplace/application/use-cases/count-seller-views'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -40,6 +42,7 @@ import { CountProductsAvailableBySellerInLast30DaysController } from './controll
     GetSellerProfileController,
     CountProductsSoldBySellerInLast30DaysController,
     CountProductsAvailableBySellerInLast30DaysController,
+    CountSellerViewsBySellerInLast30DaysController,
     AuthenticateSellerController,
     CreateCategoryController,
     CreateProductController,
@@ -56,6 +59,7 @@ import { CountProductsAvailableBySellerInLast30DaysController } from './controll
     EditSellerUseCase,
     GetSellerProfileUseCase,
     CountSellerProductsUseCase,
+    CountSellerViewsUseCase,
     CreateCategoryUseCase,
     CreateProductUseCase,
     FetchAllProductsUseCase,
