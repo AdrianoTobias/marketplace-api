@@ -25,12 +25,9 @@ describe('Count Seller Views per day', () => {
     const seller = makeSeller({}, baseView.product.ownerId)
     await inMemorySellersRepository.create(seller)
 
-    const now = new Date()
-
     for (let i = 1; i <= 50; i++) {
-      const fakerCreatedAt = new Date(
-        Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() - i * 2),
-      )
+      const fakerCreatedAt = new Date()
+      fakerCreatedAt.setDate(fakerCreatedAt.getDate() - i * 2)
 
       const view = makeView({
         product: baseView.product,
@@ -40,9 +37,8 @@ describe('Count Seller Views per day', () => {
       await inMemoryViewsRepository.create(view)
     }
 
-    const thirtyDaysAgo = new Date(
-      Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() - 30),
-    )
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
     const oneMoreView = makeView({
       product: baseView.product,
@@ -61,7 +57,11 @@ describe('Count Seller Views per day', () => {
     expect(result.value).toMatchObject({
       viewsPerDay: expect.arrayContaining([
         expect.objectContaining({
-          date: thirtyDaysAgo,
+          date: new Date(
+            new Date(new Date(thirtyDaysAgo).setHours(0, 0, 0, 0))
+              .toISOString()
+              .split('T')[0],
+          ),
           amount: 2,
         }),
       ]),

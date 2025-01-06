@@ -2,6 +2,7 @@ import { ViewsPerDay, ViewsRepository } from '../repositories/views-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 
 interface CountSellerViewsPerDayUseCaseRequest {
   sellerId: string
@@ -15,6 +16,7 @@ type CountSellerViewsPerDayUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CountSellerViewsPerDayUseCase {
   constructor(
     private sellersRepository: SellersRepository,

@@ -25,7 +25,7 @@ export class PrismaViewsRepository implements ViewsRepository {
     }
 
     if (from) {
-      where.createdAt = { gte: new Date(from.toISOString().split('T')[0]) }
+      where.createdAt = { gte: new Date(from.setHours(0, 0, 0, 0)) }
     }
 
     const amount = await this.prisma.view.count({
@@ -38,32 +38,63 @@ export class PrismaViewsRepository implements ViewsRepository {
   async countPerDay({
     sellerId,
     productId,
-    from,
+    from = new Date(new Date().setDate(new Date().getDate() - 30)),
   }: Count): Promise<ViewsPerDay[]> {
-    const where: Record<string, unknown> = {
-      sellerId,
+    const normalizedFrom = new Date(from)
+    normalizedFrom.setHours(0, 0, 0, 0)
+
+    const where: Prisma.ViewWhereInput = {
+      product: {
+        ownerId: sellerId,
+      },
+      createdAt: { gte: normalizedFrom },
     }
 
     if (productId) {
       where.productId = productId
     }
-
-    if (from) {
-      where.statusAt = { gte: from }
-    }
-
-    const groupedResults = await this.prisma.view.groupBy({
-      by: ['createdAt'],
+    const views = await this.prisma.view.findMany({
       where,
-      _count: {
-        _all: true,
+      orderBy: {
+        createdAt: 'asc',
       },
     })
 
-    return groupedResults.map((result) => ({
-      date: result.createdAt,
-      amount: result._count._all,
+    const groupedViews = views.reduce(
+      (acc, view) => {
+        const normalizedCreatedAt = new Date(view.createdAt)
+        normalizedCreatedAt.setHours(0, 0, 0, 0)
+
+        const dateKey = normalizedCreatedAt.toISOString().split('T')[0]
+
+        acc[dateKey] = (acc[dateKey] || 0) + 1
+
+        return acc
+      },
+      {} as Record<string, number>,
+    )
+
+    const allDays: string[] = []
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+
+    const diffInDays = Math.floor(
+      (now.getTime() - normalizedFrom.getTime()) / (1000 * 3600 * 24),
+    )
+
+    for (let i = diffInDays; i >= 0; i--) {
+      const date = new Date(now)
+      date.setDate(now.getDate() - i)
+
+      allDays.push(date.toISOString().split('T')[0])
+    }
+
+    const viewsPerDay = allDays.map((day) => ({
+      date: new Date(day),
+      amount: groupedViews[day] || 0,
     }))
+
+    return viewsPerDay
   }
 
   async findById(id: string): Promise<View | null> {

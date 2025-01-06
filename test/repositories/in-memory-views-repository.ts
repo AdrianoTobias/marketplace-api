@@ -3,6 +3,7 @@ import {
   ViewsRepository,
 } from '@/domain/marketplace/application/repositories/views-repository'
 import { View } from '@/domain/marketplace/enterprise/entities/view'
+import { normalizeDate } from 'test/utils/normalizeDate'
 
 export class InMemoryViewsRepository implements ViewsRepository {
   public items: View[] = []
@@ -21,27 +22,48 @@ export class InMemoryViewsRepository implements ViewsRepository {
     return filteredViews.length
   }
 
-  async countPerDay({ sellerId, from }: Count) {
+  async countPerDay({
+    sellerId,
+    from = new Date(new Date().setDate(new Date().getDate() - 30)),
+  }: Count) {
     let filteredViews = this.items
 
     filteredViews = filteredViews.filter((view) => {
       return (
-        (!from || view.createdAt >= from) &&
+        view.createdAt >= normalizeDate(from) &&
         view.product.ownerId.toString() === sellerId
       )
     })
 
-    const counts = filteredViews.reduce((acc, view) => {
-      const dateKey = view.createdAt.toISOString().split('T')[0]
+    const groupedViews = filteredViews.reduce(
+      (acc, view) => {
+        const dateKey = normalizeDate(view.createdAt)
+          .toISOString()
+          .split('T')[0]
 
-      acc.set(dateKey, (acc.get(dateKey) || 0) + 1)
+        acc[dateKey] = (acc[dateKey] || 0) + 1
 
-      return acc
-    }, new Map<string, number>())
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
-    const viewsPerDay = Array.from(counts.entries()).map(([date, amount]) => ({
-      date: new Date(date),
-      amount,
+    const allDays: string[] = []
+    const now = normalizeDate(new Date())
+    const diffInDays = Math.floor(
+      (now.getTime() - normalizeDate(from).getTime()) / (1000 * 3600 * 24),
+    )
+
+    for (let i = diffInDays; i >= 0; i--) {
+      const date = new Date(now)
+      date.setDate(now.getDate() - i)
+
+      allDays.push(date.toISOString().split('T')[0])
+    }
+
+    const viewsPerDay = allDays.map((day) => ({
+      date: new Date(day),
+      amount: groupedViews[day] || 0,
     }))
 
     return viewsPerDay
