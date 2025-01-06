@@ -64,6 +64,13 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name count_product_views_in_last_7_days
+GET {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea/metrics/views
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
 # @name authenticate_seller
 POST {{baseUrl}}/sellers/sessions
 Content-Type: application/json
