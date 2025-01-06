@@ -19,7 +19,7 @@ export class PrismaProductsRepository implements ProductsRepository {
     }
 
     if (from) {
-      where.statusAt = { gte: new Date(from.toISOString().split('T')[0]) }
+      where.statusAt = { gte: new Date(from.setHours(0, 0, 0, 0)) }
     }
 
     if (status) {
