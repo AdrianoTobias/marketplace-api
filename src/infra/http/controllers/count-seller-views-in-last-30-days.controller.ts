@@ -4,7 +4,7 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CountSellerViewsUseCase } from '@/domain/marketplace/application/use-cases/count-seller-views'
 
 @Controller('/sellers/metrics/views')
-export class CountSellerViewsBySellerInLast30DaysController {
+export class CountSellerViewsInLast30DaysController {
   constructor(private countSellerViewsUseCase: CountSellerViewsUseCase) {}
 
   @Get()

@@ -31,10 +31,10 @@ import { RegisterProductViewController } from './controllers/register-product-vi
 import { CountSellerProductsUseCase } from '@/domain/marketplace/application/use-cases/count-seller-products'
 import { CountProductsSoldBySellerInLast30DaysController } from './controllers/count-products-sold-by-seller-in-last-30-days.controller'
 import { CountProductsAvailableBySellerInLast30DaysController } from './controllers/count-products-available-by-seller-in-last-30-days.controller'
-import { CountSellerViewsBySellerInLast30DaysController } from './controllers/count-seller-views-in-last-30-days.controller'
+import { CountSellerViewsInLast30DaysController } from './controllers/count-seller-views-in-last-30-days.controller'
 import { CountSellerViewsUseCase } from '@/domain/marketplace/application/use-cases/count-seller-views'
 import { CountSellerViewsPerDayUseCase } from '@/domain/marketplace/application/use-cases/count-seller-views-per-day'
-import { CountSellerViewsPerDayBySellerInLast30DaysController } from './controllers/count-seller-views-per-day-in-last-30-days.controller'
+import { CountSellerViewsPerDayInLast30DaysController } from './controllers/count-seller-views-per-day-in-last-30-days.controller'
 import { CountProductViewsUseCase } from '@/domain/marketplace/application/use-cases/count-product-views'
 import { CountProductViewsInLast7DaysController } from './controllers/count-product-views-in-last-7-days.controller'
 
@@ -46,8 +46,8 @@ import { CountProductViewsInLast7DaysController } from './controllers/count-prod
     GetSellerProfileController,
     CountProductsSoldBySellerInLast30DaysController,
     CountProductsAvailableBySellerInLast30DaysController,
-    CountSellerViewsBySellerInLast30DaysController,
-    CountSellerViewsPerDayBySellerInLast30DaysController,
+    CountSellerViewsInLast30DaysController,
+    CountSellerViewsPerDayInLast30DaysController,
     CountProductViewsInLast7DaysController,
     AuthenticateSellerController,
     CreateCategoryController,
