@@ -37,6 +37,7 @@ import { CountSellerViewsPerDayUseCase } from '@/domain/marketplace/application/
 import { CountSellerViewsPerDayInLast30DaysController } from './controllers/count-seller-views-per-day-in-last-30-days.controller'
 import { CountProductViewsUseCase } from '@/domain/marketplace/application/use-cases/count-product-views'
 import { CountProductViewsInLast7DaysController } from './controllers/count-product-views-in-last-7-days.controller'
+import { UploadAttachmenstController } from './controllers/upload-attachments.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -59,6 +60,7 @@ import { CountProductViewsInLast7DaysController } from './controllers/count-prod
     FetchAllCategoriesController,
     FetchAllProductsController,
     RegisterProductViewController,
+    UploadAttachmenstController,
   ],
   providers: [
     RegisterSellerUseCase,
