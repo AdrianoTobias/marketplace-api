@@ -1,6 +1,6 @@
 import { ProductStatus } from '@/domain/marketplace/enterprise/entities/product'
 import { AppModule } from '@/infra/app.module'
-import { DatabaseModule } from '@/infra/database/database-module'
+import { DatabaseModule } from '@/infra/database/database.module'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'

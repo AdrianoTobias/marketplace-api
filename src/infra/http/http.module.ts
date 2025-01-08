@@ -7,7 +7,7 @@ import { CreateProductController } from './controllers/create-product.controller
 import { FetchAllCategoriesController } from './controllers/fetch-all-categories.controller'
 import { FetchAllProductsController } from './controllers/fetch-all-products.controller'
 import { CreateCategoryUseCase } from '@/domain/marketplace/application/use-cases/create-category'
-import { DatabaseModule } from '../database/database-module'
+import { DatabaseModule } from '../database/database.module'
 import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { RegisterSellerUseCase } from '@/domain/marketplace/application/use-cases/register-seller'
