@@ -8,10 +8,14 @@ import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { Injectable } from '@nestjs/common'
 import { PrismaProductMapper } from '../mappers/prisma-product-mapper'
 import { PrismaService } from '../prisma.service'
+import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
 
 @Injectable()
 export class PrismaProductsRepository implements ProductsRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private productAttachmentsRepository: ProductAttachmentsRepository,
+  ) {}
 
   async count({ sellerId, from, status }: Count): Promise<number> {
     const where: Record<string, unknown> = {
@@ -101,12 +105,20 @@ export class PrismaProductsRepository implements ProductsRepository {
   async save(product: Product): Promise<void> {
     const data = PrismaProductMapper.toPrisma(product)
 
-    await this.prisma.product.update({
-      where: {
-        id: product.id.toString(),
-      },
-      data,
-    })
+    await Promise.all([
+      this.prisma.product.update({
+        where: {
+          id: product.id.toString(),
+        },
+        data,
+      }),
+      this.productAttachmentsRepository.createMany(
+        product.attachments.getNewItems(),
+      ),
+      this.productAttachmentsRepository.deleteMany(
+        product.attachments.getRemovedItems(),
+      ),
+    ])
   }
 
   async create(product: Product): Promise<void> {
@@ -115,5 +127,9 @@ export class PrismaProductsRepository implements ProductsRepository {
     await this.prisma.product.create({
       data,
     })
+
+    await this.productAttachmentsRepository.createMany(
+      product.attachments.getItems(),
+    )
   }
 }

@@ -110,7 +110,7 @@ Authorization: Bearer {{authToken}}
   "description": "A detailed product 2 description",
   "priceInCents": 2000,
   "categoryId": "0d5e54b4-ac6d-47e6-957b-3e12af76bc34",
-  "attachmentsIds": []
+  "attachmentsIds": ["27bc8eff-bbaf-4454-89e9-d5f7cb166894"]
 }
 
 ###
@@ -163,7 +163,14 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetch_recent_products
-GET {{baseUrl}}/products?page=1&search=3&status=available
-Content-Type: application/json
+# @name upload_attachments
+POST {{baseUrl}}/attachments
+Content-Type: multipart/form-data; boundary=boundary
 Authorization: Bearer {{authToken}}
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample-attachment.png"
+Content-Type: image/png
+
+< ./test/e2e/sample-attachment.png
+--boundary--

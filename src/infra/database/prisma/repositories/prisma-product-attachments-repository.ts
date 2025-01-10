@@ -29,4 +29,22 @@ export class PrismaProductAttachmentsRepository
 
     await this.prisma.attachment.updateMany(data)
   }
+
+  async deleteMany(attachments: ProductAttachment[]): Promise<void> {
+    if (attachments.length === 0) {
+      return
+    }
+
+    const attachmentIds = attachments.map((attachment) => {
+      return attachment.id.toString()
+    })
+
+    await this.prisma.attachment.deleteMany({
+      where: {
+        id: {
+          in: attachmentIds,
+        },
+      },
+    })
+  }
 }
