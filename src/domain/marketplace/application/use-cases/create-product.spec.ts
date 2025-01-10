@@ -8,8 +8,10 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { makeAttachment } from 'test/factories/make-attachment'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 
 let inMemorySellersRepository: InMemorySellersRepository
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -18,7 +20,11 @@ let sut: CreateProductUseCase
 describe('Create Product', () => {
   beforeEach(() => {
     inMemorySellersRepository = new InMemorySellersRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     sut = new CreateProductUseCase(
@@ -104,5 +110,40 @@ describe('Create Product', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should persist attachments when creating a new product', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    await inMemoryAttachmentsRepository.createMany([
+      makeAttachment({}, new UniqueEntityID('1')),
+      makeAttachment({}, new UniqueEntityID('2')),
+    ])
+
+    const result = await sut.execute({
+      title: 'Novo produto',
+      description: 'Descrição do produto',
+      priceInCents: 1000,
+      ownerId: seller.id.toValue(),
+      categoryId: category.id.toValue(),
+      attachmentsIds: ['1', '2'],
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryProductAttachmentsRepository.items).toHaveLength(2)
+    expect(inMemoryProductAttachmentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('1'),
+        }),
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('2'),
+        }),
+      ]),
+    )
   })
 })

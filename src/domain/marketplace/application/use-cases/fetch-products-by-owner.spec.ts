@@ -4,15 +4,21 @@ import { FetchProductsByOwnerIdUseCase } from './fetch-products-by-owner'
 import { ProductStatus } from '../../enterprise/entities/product'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { makeSeller } from 'test/factories/make-seller'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 
 let inMemorySellersRepository: InMemorySellersRepository
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let sut: FetchProductsByOwnerIdUseCase
 
 describe('Fetch Products by Owner', () => {
   beforeEach(() => {
     inMemorySellersRepository = new InMemorySellersRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
     sut = new FetchProductsByOwnerIdUseCase(
       inMemorySellersRepository,
       inMemoryProductsRepository,

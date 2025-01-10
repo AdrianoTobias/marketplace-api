@@ -4,14 +4,20 @@ import { makeView } from 'test/factories/make-view'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
 import { makeProduct } from 'test/factories/make-product'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryViewsRepository: InMemoryViewsRepository
 let sut: CountProductViewsUseCase
 
 describe('Count Product Views', () => {
   beforeEach(() => {
-    inMemoryProductsRepository = new InMemoryProductsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
     inMemoryViewsRepository = new InMemoryViewsRepository()
     sut = new CountProductViewsUseCase(
       inMemoryProductsRepository,

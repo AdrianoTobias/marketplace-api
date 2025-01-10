@@ -16,20 +16,22 @@ import { ProductAttachmentList } from '../../enterprise/entities/product-attachm
 import { makeProductAttachment } from 'test/factories/make-product-attachment'
 
 let inMemorySellersRepository: InMemorySellersRepository
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let sut: EditProductUseCase
 
 describe('Edit Product', () => {
   beforeEach(() => {
     inMemorySellersRepository = new InMemorySellersRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository()
-    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
-    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
+    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
 
     sut = new EditProductUseCase(
       inMemorySellersRepository,
@@ -245,5 +247,71 @@ describe('Edit Product', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should sync new and removed attachment when editing a product', async () => {
+    await inMemoryAttachmentsRepository.createMany([
+      makeAttachment({}, new UniqueEntityID('1')),
+      makeAttachment({}, new UniqueEntityID('2')),
+      makeAttachment({}, new UniqueEntityID('3')),
+    ])
+
+    const productAttachmet1 = makeProductAttachment({
+      attachmentId: new UniqueEntityID('1'),
+      productId: new UniqueEntityID('product-1'),
+    })
+
+    const productAttachmet2 = makeProductAttachment({
+      attachmentId: new UniqueEntityID('2'),
+      productId: new UniqueEntityID('product-1'),
+    })
+
+    await inMemoryProductAttachmentsRepository.createMany([
+      productAttachmet1,
+      productAttachmet2,
+    ])
+
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const product = makeProduct(
+      {
+        ownerId: seller.id,
+        attachments: new ProductAttachmentList([
+          productAttachmet1,
+          productAttachmet2,
+        ]),
+      },
+      new UniqueEntityID('product-1'),
+    )
+
+    await inMemoryProductsRepository.create(product)
+
+    const category = makeCategory()
+
+    await inMemoryCategoriesRepository.create(category)
+
+    const result = await sut.execute({
+      productId: product.id.toValue(),
+      ownerId: product.ownerId.toValue(),
+      title: 'Produto editado',
+      description: 'Descriação editada',
+      priceInCents: 123,
+      categoryId: category.id.toValue(),
+      attachmentsIds: ['1', '3'],
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryProductAttachmentsRepository.items).toHaveLength(2)
+    expect(inMemoryProductAttachmentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('1'),
+        }),
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('3'),
+        }),
+      ]),
+    )
   })
 })

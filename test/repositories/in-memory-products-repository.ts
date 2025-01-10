@@ -1,3 +1,4 @@
+import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
 import {
   Count,
   FindMany,
@@ -9,6 +10,10 @@ import { normalizeDate } from 'test/utils/normalizeDate'
 
 export class InMemoryProductsRepository implements ProductsRepository {
   public items: Product[] = []
+
+  constructor(
+    private productAttachmentsRepository: ProductAttachmentsRepository,
+  ) {}
 
   async count({ sellerId, status, from }: Count) {
     let filteredProducts = this.items
@@ -94,9 +99,21 @@ export class InMemoryProductsRepository implements ProductsRepository {
     const itemIndex = this.items.findIndex((item) => item.id === product.id)
 
     this.items[itemIndex] = product
+
+    await this.productAttachmentsRepository.createMany(
+      product.attachments.getNewItems(),
+    )
+
+    await this.productAttachmentsRepository.deleteMany(
+      product.attachments.getRemovedItems(),
+    )
   }
 
   async create(product: Product) {
     this.items.push(product)
+
+    await this.productAttachmentsRepository.createMany(
+      product.attachments.getItems(),
+    )
   }
 }

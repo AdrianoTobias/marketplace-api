@@ -5,15 +5,21 @@ import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-r
 import { makeSeller } from 'test/factories/make-seller'
 import { ProductStatus } from '../../enterprise/entities/product'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 
 let inMemorySellersRepository: InMemorySellersRepository
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let sut: CountSellerProductsUseCase
 
 describe('Count Seller Products', () => {
   beforeEach(() => {
     inMemorySellersRepository = new InMemorySellersRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
     sut = new CountSellerProductsUseCase(
       inMemorySellersRepository,
       inMemoryProductsRepository,

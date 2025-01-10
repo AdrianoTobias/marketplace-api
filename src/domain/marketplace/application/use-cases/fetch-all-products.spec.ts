@@ -2,13 +2,19 @@ import { InMemoryProductsRepository } from 'test/repositories/in-memory-products
 import { makeProduct } from 'test/factories/make-product'
 import { FetchAllProductsUseCase } from './fetch-all-products'
 import { ProductStatus } from '../../enterprise/entities/product'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let sut: FetchAllProductsUseCase
 
 describe('Fetch All Products', () => {
   beforeEach(() => {
-    inMemoryProductsRepository = new InMemoryProductsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
     sut = new FetchAllProductsUseCase(inMemoryProductsRepository)
   })
 

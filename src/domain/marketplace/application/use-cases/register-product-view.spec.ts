@@ -8,7 +8,9 @@ import { makeViewer } from 'test/factories/make-viewer'
 import { makeView } from 'test/factories/make-view'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryViewersRepository: InMemoryViewersRepository
 let inMemoryViewsRepository: InMemoryViewsRepository
@@ -16,7 +18,11 @@ let sut: RegisterProductViewUseCase
 
 describe('Register Product View', () => {
   beforeEach(() => {
-    inMemoryProductsRepository = new InMemoryProductsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
     inMemoryViewersRepository = new InMemoryViewersRepository()
     inMemoryViewsRepository = new InMemoryViewsRepository()
     sut = new RegisterProductViewUseCase(

@@ -2,13 +2,19 @@ import { GetProductByIdUseCase } from './get-product-by-id'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
 import { makeProduct } from 'test/factories/make-product'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let sut: GetProductByIdUseCase
 
 describe('Get Product by id', () => {
   beforeEach(() => {
-    inMemoryProductsRepository = new InMemoryProductsRepository()
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
     sut = new GetProductByIdUseCase(inMemoryProductsRepository)
   })
 
