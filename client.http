@@ -135,7 +135,7 @@ Content-Type: application/json
 ###
 
 # @name edit_product
-PUT {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea
+PUT {{baseUrl}}/products/a2a0d302-8a04-4b7e-88da-118e4a59c3ab
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
@@ -144,7 +144,7 @@ Authorization: Bearer {{authToken}}
   "description": "Edited description",
   "priceInCents": 1234,
   "categoryId": "92b7b838-5a9b-40e7-8171-2eadbc5c6b4b",
-  "attachmentsIds": []
+  "attachmentsIds": ["27bc8eff-bbaf-4454-89e9-d5f7cb166894", "606d9eab-9442-4de6-9756-5b8060e5db94"]
 }
 
 ###
