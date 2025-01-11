@@ -59,11 +59,6 @@ describe('Edit Product', () => {
       productId: new UniqueEntityID('product-1'),
     })
 
-    await inMemoryProductAttachmentsRepository.createMany([
-      productAttachmet1,
-      productAttachmet2,
-    ])
-
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
@@ -265,11 +260,6 @@ describe('Edit Product', () => {
       attachmentId: new UniqueEntityID('2'),
       productId: new UniqueEntityID('product-1'),
     })
-
-    await inMemoryProductAttachmentsRepository.createMany([
-      productAttachmet1,
-      productAttachmet2,
-    ])
 
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
