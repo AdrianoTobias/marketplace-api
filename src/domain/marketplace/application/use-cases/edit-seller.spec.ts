@@ -9,6 +9,9 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
+import { makeUserAttachment } from 'test/factories/make-user-attachment'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { UserAttachmentList } from '../../enterprise/entities/user/user-attachment-list'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -19,9 +22,11 @@ let sut: EditSellerUseCase
 
 describe('Edit Seller', () => {
   beforeEach(() => {
-    inMemorySellersRepository = new InMemorySellersRepository()
-    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
+    inMemorySellersRepository = new InMemorySellersRepository(
+      inMemoryUserAttachmentsRepository,
+    )
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
 
     sut = new EditSellerUseCase(
@@ -157,5 +162,44 @@ describe('Edit Seller', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should sync new and removed attachment when editing an seller', async () => {
+    await inMemoryAttachmentsRepository.createMany([
+      makeAttachment({}, new UniqueEntityID('1')),
+      makeAttachment({}, new UniqueEntityID('2')),
+    ])
+
+    const userAttachmet1 = makeUserAttachment({
+      attachmentId: new UniqueEntityID('1'),
+      userId: new UniqueEntityID('user-1'),
+    })
+
+    const seller = makeSeller(
+      {
+        avatar: new UserAttachmentList([userAttachmet1]),
+      },
+      new UniqueEntityID('user-1'),
+    )
+
+    await inMemorySellersRepository.create(seller)
+
+    const result = await sut.execute({
+      sellerId: 'user-1',
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatarId: '2',
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryUserAttachmentsRepository.items).toHaveLength(1)
+    expect(inMemoryUserAttachmentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('2'),
+        }),
+      ]),
+    )
   })
 })

@@ -3,13 +3,18 @@ import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-r
 import { makeSeller } from 'test/factories/make-seller'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
 
+let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let sut: GetSellerProfileUseCase
 
 describe('Get Seller profile', () => {
   beforeEach(() => {
-    inMemorySellersRepository = new InMemorySellersRepository()
+    inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
+    inMemorySellersRepository = new InMemorySellersRepository(
+      inMemoryUserAttachmentsRepository,
+    )
     sut = new GetSellerProfileUseCase(inMemorySellersRepository)
   })
 

@@ -8,7 +8,10 @@ import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attac
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { InvalidPasswordConfirmationError } from './errors/invalid-password-confirmation-error'
+import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
+let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let fakeHasher: FakeHasher
@@ -17,7 +20,10 @@ let sut: RegisterSellerUseCase
 
 describe('Register Seller', () => {
   beforeEach(() => {
-    inMemorySellersRepository = new InMemorySellersRepository()
+    inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
+    inMemorySellersRepository = new InMemorySellersRepository(
+      inMemoryUserAttachmentsRepository,
+    )
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
 
@@ -143,5 +149,29 @@ describe('Register Seller', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should persist attachments when creating a new seller', async () => {
+    const avatar = makeAttachment({}, new UniqueEntityID('1'))
+    await inMemoryAttachmentsRepository.create(avatar)
+
+    const result = await sut.execute({
+      name: 'John Doe',
+      phone: '123456789',
+      email: 'johndoe@example.com',
+      avatarId: '1',
+      password: '123456',
+      passwordConfirmation: '123456',
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryUserAttachmentsRepository.items).toHaveLength(1)
+    expect(inMemoryUserAttachmentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('1'),
+        }),
+      ]),
+    )
   })
 })
