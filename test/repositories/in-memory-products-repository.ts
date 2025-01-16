@@ -139,6 +139,91 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return products
   }
 
+  async findManyWithDetailsByOwner({
+    ownerId,
+    search,
+    status,
+  }: FindManyByOwner) {
+    let filteredProducts = this.items
+
+    filteredProducts = filteredProducts.filter(
+      (product) => product.ownerId.toString() === ownerId,
+    )
+
+    if (search) {
+      filteredProducts = filteredProducts.filter(
+        (product) =>
+          product.title.includes(search) ||
+          product.description.includes(search),
+      )
+    }
+
+    if (status) {
+      filteredProducts = filteredProducts.filter(
+        (product) => product.status === status,
+      )
+    }
+
+    const products = filteredProducts.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
+
+    const owner = await this.sellersRepository.findWithAvatarById(ownerId)
+
+    if (!owner) {
+      throw new Error(`owner with ID "${ownerId}" does not exist.`)
+    }
+
+    const productsWithDetails = products.map((product) => {
+      const category = this.categoriesRepository.items.find((category) => {
+        return category.id.equals(product.categoryId)
+      })
+      console.log(category)
+      if (!category) {
+        throw new Error(
+          `category with ID "${product.categoryId.toString()}" does not exist.`,
+        )
+      }
+
+      const productAttachments = this.productAttachmentsRepository.items.filter(
+        (productAttachment) => {
+          return productAttachment.productId.equals(product.id)
+        },
+      )
+
+      const attachments = productAttachments.map((productAttachment) => {
+        const attachment = this.attachmentsRepository.items.find(
+          (attachment) => {
+            return attachment.id.equals(productAttachment.attachmentId)
+          },
+        )
+
+        if (!attachment) {
+          throw new Error(
+            `Attachment with ID "${productAttachment.attachmentId.toString()}" does not exist.`,
+          )
+        }
+
+        return attachment
+      })
+
+      return ProductDetails.create({
+        productId: product.id,
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents,
+        status: product.status,
+        owner,
+        category,
+        attachments,
+        createdAt: product.createdAt,
+        statusAt: product.statusAt,
+      })
+    })
+
+    return productsWithDetails
+  }
+
   async findMany({ page, search, status }: FindMany) {
     let filteredProducts = this.items
 

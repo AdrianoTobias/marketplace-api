@@ -5,7 +5,7 @@ import { ProductStatus } from '@/domain/marketplace/enterprise/entities/product'
 import { FetchProductsByOwnerIdUseCase } from '@/domain/marketplace/application/use-cases/fetch-products-by-owner'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { ProductPresenter } from '../presenters/product-presenter'
+import { ProductDetailsPresenter } from '../presenters/product-details-presenter'
 
 const queryParamSchema = z.object({
   search: z.string().optional(),
@@ -42,6 +42,6 @@ export class FetchProductsByOwnerController {
 
     const products = result.value.products
 
-    return { products: products.map(ProductPresenter.toHTTP) }
+    return { products: products.map(ProductDetailsPresenter.toHTTP) }
   }
 }

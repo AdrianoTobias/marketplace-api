@@ -8,6 +8,7 @@ import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memor
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
+import { makeCategory } from 'test/factories/make-category'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -47,22 +48,28 @@ describe('Fetch Products by Owner', () => {
     const seller2 = makeSeller()
     await inMemorySellersRepository.create(seller2)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
       makeProduct({
         ownerId: seller1.id,
         createdAt: new Date(2024, 11, 20),
+        categoryId: category.id,
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
         ownerId: seller2.id,
         createdAt: new Date(2024, 11, 18),
+        categoryId: category.id,
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
         ownerId: seller1.id,
         createdAt: new Date(2024, 11, 23),
+        categoryId: category.id,
       }),
     )
 
@@ -74,11 +81,25 @@ describe('Fetch Products by Owner', () => {
     expect(result.value).toMatchObject({
       products: expect.arrayContaining([
         expect.objectContaining({
-          ownerId: seller1.id,
+          owner: expect.objectContaining({
+            userId: seller1.id,
+            avatar: null,
+          }),
+          category: expect.objectContaining({
+            id: category.id,
+          }),
+          attachments: [],
           createdAt: new Date(2024, 11, 23),
         }),
         expect.objectContaining({
-          ownerId: seller1.id,
+          owner: expect.objectContaining({
+            userId: seller1.id,
+            avatar: null,
+          }),
+          category: expect.objectContaining({
+            id: category.id,
+          }),
+          attachments: [],
           createdAt: new Date(2024, 11, 20),
         }),
       ]),
@@ -89,11 +110,15 @@ describe('Fetch Products by Owner', () => {
     const seller1 = makeSeller()
     await inMemorySellersRepository.create(seller1)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
       makeProduct({
         ownerId: seller1.id,
         title: 'Produto 1',
         description: 'Descrição 123',
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 20),
       }),
     )
@@ -102,6 +127,7 @@ describe('Fetch Products by Owner', () => {
         ownerId: seller1.id,
         title: 'Produto 2',
         description: 'Descrição 456',
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 18),
       }),
     )
@@ -110,6 +136,7 @@ describe('Fetch Products by Owner', () => {
         ownerId: seller1.id,
         title: 'Produto 3',
         description: 'Descrição 789',
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 23),
       }),
     )
@@ -145,10 +172,14 @@ describe('Fetch Products by Owner', () => {
     const seller1 = makeSeller()
     await inMemorySellersRepository.create(seller1)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
       makeProduct({
         ownerId: seller1.id,
         status: ProductStatus.AVAILABLE,
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 20),
       }),
     )
@@ -156,6 +187,7 @@ describe('Fetch Products by Owner', () => {
       makeProduct({
         ownerId: seller1.id,
         status: ProductStatus.SOLD,
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 18),
       }),
     )
@@ -163,6 +195,7 @@ describe('Fetch Products by Owner', () => {
       makeProduct({
         ownerId: seller1.id,
         status: ProductStatus.AVAILABLE,
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 23),
       }),
     )
@@ -185,12 +218,16 @@ describe('Fetch Products by Owner', () => {
     expect(result.value).toMatchObject({
       products: expect.arrayContaining([
         expect.objectContaining({
-          ownerId: seller1.id,
+          owner: expect.objectContaining({
+            userId: seller1.id,
+          }),
           status: ProductStatus.AVAILABLE,
           createdAt: new Date(2024, 11, 23),
         }),
         expect.objectContaining({
-          ownerId: seller1.id,
+          owner: expect.objectContaining({
+            userId: seller1.id,
+          }),
           status: ProductStatus.AVAILABLE,
           createdAt: new Date(2024, 11, 20),
         }),
@@ -202,11 +239,15 @@ describe('Fetch Products by Owner', () => {
     const seller1 = makeSeller()
     await inMemorySellersRepository.create(seller1)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
       makeProduct({
         ownerId: seller1.id,
         title: 'Produto 1',
         description: 'Descrição 123',
+        categoryId: category.id,
         status: ProductStatus.AVAILABLE,
         createdAt: new Date(2024, 11, 20),
       }),
@@ -216,6 +257,7 @@ describe('Fetch Products by Owner', () => {
         ownerId: seller1.id,
         title: 'Produto 2',
         description: 'Descrição 456',
+        categoryId: category.id,
         status: ProductStatus.SOLD,
         createdAt: new Date(2024, 11, 18),
       }),

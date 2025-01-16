@@ -24,6 +24,10 @@ export abstract class ProductsRepository {
   abstract findById(id: string): Promise<Product | null>
   abstract findDetailsById(id: string): Promise<ProductDetails | null>
   abstract findManyByOwner(params: FindManyByOwner): Promise<Product[]>
+  abstract findManyWithDetailsByOwner(
+    params: FindManyByOwner,
+  ): Promise<ProductDetails[]>
+
   abstract findMany(params: FindMany): Promise<Product[]>
   abstract save(product: Product): Promise<void>
   abstract create(product: Product): Promise<void>

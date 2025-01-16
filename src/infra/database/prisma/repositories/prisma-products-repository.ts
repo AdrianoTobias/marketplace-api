@@ -102,6 +102,41 @@ export class PrismaProductsRepository implements ProductsRepository {
     return products.map(PrismaProductMapper.toDomain)
   }
 
+  async findManyWithDetailsByOwner({
+    ownerId,
+    search,
+    status,
+  }: FindManyByOwner): Promise<ProductDetails[]> {
+    const products = await this.prisma.product.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        ownerId,
+        ...(search
+          ? {
+              OR: [
+                { title: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+        ...(status ? { status } : {}),
+      },
+      include: {
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
+        category: true,
+        attachments: true,
+      },
+    })
+
+    return products.map(PrismaProductDetailsMapper.toDomain)
+  }
+
   async findMany({ page, search, status }: FindMany): Promise<Product[]> {
     const perPage = 3
 
