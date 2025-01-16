@@ -7,10 +7,12 @@ import { makeSeller } from 'test/factories/make-seller'
 import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
+import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let inMemorySellersRepository: InMemorySellersRepository
+let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let sut: FetchProductsByOwnerIdUseCase
@@ -23,10 +25,14 @@ describe('Fetch Products by Owner', () => {
       inMemoryUserAttachmentsRepository,
       inMemoryAttachmentsRepository,
     )
+    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemorySellersRepository,
+      inMemoryCategoriesRepository,
+      inMemoryAttachmentsRepository,
     )
     sut = new FetchProductsByOwnerIdUseCase(
       inMemorySellersRepository,

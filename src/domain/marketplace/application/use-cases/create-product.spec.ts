@@ -31,6 +31,9 @@ describe('Create Product', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemorySellersRepository,
+      inMemoryCategoriesRepository,
+      inMemoryAttachmentsRepository,
     )
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     sut = new CreateProductUseCase(

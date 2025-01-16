@@ -129,8 +129,8 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name get_product_bt_id
-GET {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea
+# @name get_product_by_id
+GET {{baseUrl}}/products/b2203399-ed4f-49ef-9337-f9e12eff7cb4
 Content-Type: application/json
 
 ###

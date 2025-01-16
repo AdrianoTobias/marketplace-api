@@ -6,7 +6,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { UserWithAvatar } from '@/domain/marketplace/enterprise/entities/value-objects/user-with-avatar'
 import { PrismaAttachmentMapper } from './prisma-attachment-mapper'
 
-type PrismaUserWithAvatar = PrismaUser & {
+export type PrismaUserWithAvatar = PrismaUser & {
   avatar: PrismaAttachment | null
 }
 

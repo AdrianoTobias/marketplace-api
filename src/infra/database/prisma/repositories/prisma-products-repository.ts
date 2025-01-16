@@ -9,6 +9,8 @@ import { Injectable } from '@nestjs/common'
 import { PrismaProductMapper } from '../mappers/prisma-product-mapper'
 import { PrismaService } from '../prisma.service'
 import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
+import { ProductDetails } from '@/domain/marketplace/enterprise/entities/value-objects/product-details'
+import { PrismaProductDetailsMapper } from '../mappers/prisma-product-details-mapper'
 
 @Injectable()
 export class PrismaProductsRepository implements ProductsRepository {
@@ -49,6 +51,29 @@ export class PrismaProductsRepository implements ProductsRepository {
     }
 
     return PrismaProductMapper.toDomain(product)
+  }
+
+  async findDetailsById(id: string): Promise<ProductDetails | null> {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
+        category: true,
+        attachments: true,
+      },
+    })
+
+    if (!product) {
+      return null
+    }
+
+    return PrismaProductDetailsMapper.toDomain(product)
   }
 
   async findManyByOwner({

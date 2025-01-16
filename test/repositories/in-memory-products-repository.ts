@@ -1,4 +1,3 @@
-import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
 import {
   Count,
   FindMany,
@@ -7,12 +6,20 @@ import {
 } from '@/domain/marketplace/application/repositories/products-repository'
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { normalizeDate } from 'test/utils/normalizeDate'
+import { InMemorySellersRepository } from './in-memory-sellers-repository'
+import { InMemoryProductAttachmentsRepository } from './in-memory-product-attachments-repository'
+import { InMemoryCategoriesRepository } from './in-memory-categories-repository'
+import { InMemoryAttachmentsRepository } from './in-memory-attachments-repository'
+import { ProductDetails } from '@/domain/marketplace/enterprise/entities/value-objects/product-details'
 
 export class InMemoryProductsRepository implements ProductsRepository {
   public items: Product[] = []
 
   constructor(
-    private productAttachmentsRepository: ProductAttachmentsRepository,
+    private productAttachmentsRepository: InMemoryProductAttachmentsRepository,
+    private sellersRepository: InMemorySellersRepository,
+    private categoriesRepository: InMemoryCategoriesRepository,
+    private attachmentsRepository: InMemoryAttachmentsRepository,
   ) {}
 
   async count({ sellerId, status, from }: Count) {
@@ -41,6 +48,67 @@ export class InMemoryProductsRepository implements ProductsRepository {
     }
 
     return product
+  }
+
+  async findDetailsById(id: string) {
+    const product = this.items.find((item) => item.id.toString() === id)
+
+    if (!product) {
+      return null
+    }
+
+    const owner = await this.sellersRepository.findWithAvatarById(
+      product.ownerId.toString(),
+    )
+
+    if (!owner) {
+      throw new Error(
+        `owner with ID "${product.ownerId.toString()}" does not exist.`,
+      )
+    }
+
+    const category = this.categoriesRepository.items.find((category) => {
+      return category.id.equals(product.categoryId)
+    })
+
+    if (!category) {
+      throw new Error(
+        `category with ID "${product.categoryId.toString()}" does not exist.`,
+      )
+    }
+
+    const productAttachments = this.productAttachmentsRepository.items.filter(
+      (productAttachment) => {
+        return productAttachment.productId.equals(product.id)
+      },
+    )
+
+    const attachments = productAttachments.map((productAttachment) => {
+      const attachment = this.attachmentsRepository.items.find((attachment) => {
+        return attachment.id.equals(productAttachment.attachmentId)
+      })
+
+      if (!attachment) {
+        throw new Error(
+          `Attachment with ID "${productAttachment.attachmentId.toString()}" does not exist.`,
+        )
+      }
+
+      return attachment
+    })
+
+    return ProductDetails.create({
+      productId: product.id,
+      title: product.title,
+      description: product.description,
+      priceInCents: product.priceInCents,
+      status: product.status,
+      owner,
+      category,
+      attachments,
+      createdAt: product.createdAt,
+      statusAt: product.statusAt,
+    })
   }
 
   async findManyByOwner({ ownerId, search, status }: FindManyByOwner) {

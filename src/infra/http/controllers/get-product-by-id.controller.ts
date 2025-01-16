@@ -1,7 +1,7 @@
 import { GetProductByIdUseCase } from '@/domain/marketplace/application/use-cases/get-product-by-id'
 import { BadRequestException, Controller, Get, Param } from '@nestjs/common'
-import { ProductPresenter } from '../presenters/product-presenter'
 import { Public } from '@/infra/auth/public'
+import { ProductDetailsPresenter } from '../presenters/product-details-presenter'
 
 @Controller('/products/:id')
 @Public()
@@ -16,6 +16,6 @@ export class GetProductByIdController {
       throw new BadRequestException()
     }
 
-    return { product: ProductPresenter.toHTTP(result.value.product) }
+    return { product: ProductDetailsPresenter.toHTTP(result.value.product) }
   }
 }

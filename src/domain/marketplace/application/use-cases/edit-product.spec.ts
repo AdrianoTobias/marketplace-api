@@ -36,6 +36,9 @@ describe('Edit Product', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemorySellersRepository,
+      inMemoryCategoriesRepository,
+      inMemoryAttachmentsRepository,
     )
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
 
