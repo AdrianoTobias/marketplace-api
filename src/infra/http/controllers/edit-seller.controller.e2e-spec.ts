@@ -67,6 +67,9 @@ describe('Edit Seller (E2E)', () => {
         name: 'John Doe edited',
         phone: '123123123',
         email: 'edited@example.com',
+        avatar: expect.objectContaining({
+          id: attachment2.id.toString(),
+        }),
       }),
     })
 

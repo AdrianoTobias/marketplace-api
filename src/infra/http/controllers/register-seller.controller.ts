@@ -13,6 +13,7 @@ import { RegisterSellerUseCase } from '@/domain/marketplace/application/use-case
 import { EmailAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/email-already-exists-error'
 import { PhoneAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/phone-already-exists-error'
 import { Public } from '@/infra/auth/public'
+import { UserWithAvatarPresenter } from '../presenters/user-with-avatar-presenter'
 
 const registerSellerBodySchema = z.object({
   name: z.string(),
@@ -58,5 +59,9 @@ export class RegisterSellerController {
           throw new BadRequestException(error.message)
       }
     }
+
+    const seller = result.value.seller
+
+    return { seller: UserWithAvatarPresenter.toHTTP(seller) }
   }
 }

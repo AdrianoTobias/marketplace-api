@@ -1,8 +1,8 @@
-import { Seller } from '@/domain/marketplace/enterprise/entities/user/seller'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
+import { UserWithAvatar } from '../../enterprise/entities/value-objects/user-with-avatar'
 
 interface GetSellerProfileUseCaseRequest {
   id: string
@@ -11,7 +11,7 @@ interface GetSellerProfileUseCaseRequest {
 type GetSellerProfileUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    seller: Seller
+    seller: UserWithAvatar
   }
 >
 
@@ -22,7 +22,7 @@ export class GetSellerProfileUseCase {
   async execute({
     id,
   }: GetSellerProfileUseCaseRequest): Promise<GetSellerProfileUseCaseResponse> {
-    const seller = await this.sellersRepository.findById(id)
+    const seller = await this.sellersRepository.findWithAvatarById(id)
 
     if (!seller) {
       return left(new ResourceNotFoundError())

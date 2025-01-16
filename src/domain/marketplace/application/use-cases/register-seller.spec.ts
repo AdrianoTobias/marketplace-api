@@ -12,8 +12,8 @@ import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-u
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
-let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
+let inMemorySellersRepository: InMemorySellersRepository
 let fakeHasher: FakeHasher
 
 let sut: RegisterSellerUseCase
@@ -21,10 +21,11 @@ let sut: RegisterSellerUseCase
 describe('Register Seller', () => {
   beforeEach(() => {
     inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemorySellersRepository = new InMemorySellersRepository(
       inMemoryUserAttachmentsRepository,
+      inMemoryAttachmentsRepository,
     )
-    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
 
     sut = new RegisterSellerUseCase(
@@ -45,8 +46,11 @@ describe('Register Seller', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value).toEqual({
-      seller: inMemorySellersRepository.items[0],
+    expect(result.value).toMatchObject({
+      seller: expect.objectContaining({
+        email: 'johndoe@example.com',
+        avatar: null,
+      }),
     })
   })
 
@@ -65,8 +69,17 @@ describe('Register Seller', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value).toEqual({
-      seller: inMemorySellersRepository.items[0],
+    expect(result.value).toMatchObject({
+      seller: expect.objectContaining({
+        email: 'johndoe@example.com',
+      }),
+    })
+    expect(result.value).toMatchObject({
+      seller: expect.objectContaining({
+        avatar: expect.objectContaining({
+          id: avatar.id,
+        }),
+      }),
     })
   })
 

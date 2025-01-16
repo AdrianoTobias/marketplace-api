@@ -12,7 +12,7 @@ import { EmailAlreadyExistsError } from '@/domain/marketplace/application/use-ca
 import { PhoneAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/phone-already-exists-error'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { UserPresenter } from '../presenters/user-presenter'
+import { UserWithAvatarPresenter } from '../presenters/user-with-avatar-presenter'
 
 const editSellerBodySchema = z.object({
   name: z.string(),
@@ -62,6 +62,8 @@ export class EditSellerController {
       }
     }
 
-    return { seller: UserPresenter.toHTTP(result.value.seller) }
+    const seller = result.value.seller
+
+    return { seller: UserWithAvatarPresenter.toHTTP(seller) }
   }
 }

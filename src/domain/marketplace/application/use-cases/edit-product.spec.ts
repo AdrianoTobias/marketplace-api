@@ -17,18 +17,20 @@ import { makeProductAttachment } from 'test/factories/make-product-attachment'
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
-let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sut: EditProductUseCase
 
 describe('Edit Product', () => {
   beforeEach(() => {
     inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemorySellersRepository = new InMemorySellersRepository(
       inMemoryUserAttachmentsRepository,
+      inMemoryAttachmentsRepository,
     )
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
@@ -36,7 +38,6 @@ describe('Edit Product', () => {
       inMemoryProductAttachmentsRepository,
     )
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
-    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
 
     sut = new EditProductUseCase(
       inMemorySellersRepository,

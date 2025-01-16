@@ -11,6 +11,7 @@ import { UserAttachmentList } from '../../enterprise/entities/user/user-attachme
 import { UserAttachment } from '../../enterprise/entities/user/user-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidPasswordConfirmationError } from './errors/invalid-password-confirmation-error'
+import { UserWithAvatar } from '../../enterprise/entities/value-objects/user-with-avatar'
 
 interface RegisterSellerUseCaseRequest {
   name: string
@@ -27,7 +28,7 @@ type RegisterSellerUseCaseResponse = Either<
   | PhoneAlreadyExistsError
   | ResourceNotFoundError,
   {
-    seller: Seller
+    seller: UserWithAvatar
   }
 >
 
@@ -89,10 +90,10 @@ export class RegisterSellerUseCase {
       seller.avatar = new UserAttachmentList([userAttachment])
     }
 
-    await this.sellersRepository.create(seller)
+    const sellerWithAvatar = await this.sellersRepository.create(seller)
 
     return right({
-      seller,
+      seller: sellerWithAvatar,
     })
   }
 }

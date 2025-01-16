@@ -1,8 +1,8 @@
 import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-cases/get-seller-profile'
 import { BadRequestException, Controller, Get } from '@nestjs/common'
-import { UserPresenter } from '../presenters/user-presenter'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { UserWithAvatarPresenter } from '../presenters/user-with-avatar-presenter'
 
 @Controller('/sellers/me')
 export class GetSellerProfileController {
@@ -18,6 +18,6 @@ export class GetSellerProfileController {
       throw new BadRequestException()
     }
 
-    return { seller: UserPresenter.toHTTP(result.value.seller) }
+    return { seller: UserWithAvatarPresenter.toHTTP(result.value.seller) }
   }
 }

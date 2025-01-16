@@ -1,14 +1,14 @@
 ## Funcionalidades e Regras
 
-- [ ]  Deve ser possível cadastrar novos usuários
-    - [ ]  Deve ser feito o hash da senha do usuário
-    - [ ]  Não deve ser possível cadastrar usuário com e-mail duplicado
-    - [ ]  Não deve ser possível cadastrar usuário com telefone duplicado
+- [x]  Deve ser possível cadastrar novos usuários
+    - [x]  Deve ser feito o hash da senha do usuário
+    - [x]  Não deve ser possível cadastrar usuário com e-mail duplicado
+    - [x]  Não deve ser possível cadastrar usuário com telefone duplicado
 
-- [ ]  Deve ser possível atualizar os dados do usuário
-    - [ ]  Deve ser feito o hash da senha do usuário
-    - [ ]  Não deve ser possível atualizar para um e-mail duplicado
-    - [ ]  Não deve ser possível atualizar para um telefone duplicado
+- [x]  Deve ser possível atualizar os dados do usuário
+    - [x]  Deve ser feito o hash da senha do usuário
+    - [x]  Não deve ser possível atualizar para um e-mail duplicado
+    - [x]  Não deve ser possível atualizar para um telefone duplicado
 
 - [ ]  Deve ser possível obter o token de autenticação
     - [ ]  Não deve ser possível se autenticar com credenciais incorretas
@@ -48,9 +48,9 @@
     - [ ]  Não deve ser possível marcar como Cancelado um Produto já Vendido
     - [ ]  Não deve ser possível marcar como Vendido um Produto Cancelado
 
-- [ ]  Deve ser possível obter informações do perfil de um usuário
-    - [ ]  Não deve ser possível obter informações do perfil de um usuário inexistente
-    - [ ]  Não deve ser possível obter a senha do usuário
+- [x]  Deve ser possível obter informações do perfil de um usuário
+    - [x]  Não deve ser possível obter informações do perfil de um usuário inexistente
+    - [x]  Não deve ser possível obter a senha do usuário
 
 - [ ]  Deve ser possível registrar uma visualização em um produto
     - [ ]  Não deve ser possível registrar uma visualização em um produto inexistente

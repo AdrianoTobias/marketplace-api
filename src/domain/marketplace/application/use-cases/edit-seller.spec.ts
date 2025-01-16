@@ -23,10 +23,11 @@ let sut: EditSellerUseCase
 describe('Edit Seller', () => {
   beforeEach(() => {
     inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemorySellersRepository = new InMemorySellersRepository(
       inMemoryUserAttachmentsRepository,
+      inMemoryAttachmentsRepository,
     )
-    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
 
     sut = new EditSellerUseCase(
@@ -50,8 +51,11 @@ describe('Edit Seller', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value).toEqual({
-      seller: inMemorySellersRepository.items[0],
+    expect(result.value).toMatchObject({
+      seller: expect.objectContaining({
+        email: 'johndoe@example.com',
+        avatar: null,
+      }),
     })
   })
 
@@ -71,8 +75,13 @@ describe('Edit Seller', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value).toEqual({
-      seller: inMemorySellersRepository.items[0],
+    expect(result.value).toMatchObject({
+      seller: expect.objectContaining({
+        email: seller.email,
+        avatar: expect.objectContaining({
+          id: avatar.id,
+        }),
+      }),
     })
   })
 

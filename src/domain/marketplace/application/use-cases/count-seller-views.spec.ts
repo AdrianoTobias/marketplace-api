@@ -5,8 +5,10 @@ import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-r
 import { makeSeller } from 'test/factories/make-seller'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryViewsRepository: InMemoryViewsRepository
 let sut: CountSellerViewsUseCase
@@ -14,8 +16,10 @@ let sut: CountSellerViewsUseCase
 describe('Count Seller Views', () => {
   beforeEach(() => {
     inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemorySellersRepository = new InMemorySellersRepository(
       inMemoryUserAttachmentsRepository,
+      inMemoryAttachmentsRepository,
     )
     inMemoryViewsRepository = new InMemoryViewsRepository()
     sut = new CountSellerViewsUseCase(

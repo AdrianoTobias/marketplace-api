@@ -6,10 +6,10 @@ POST {{baseUrl}}/sellers
 Content-Type: application/json
 
 {
-	"name": "Teste 5",
-  "phone": "1234567895",
-	"email": "teste5@teste.com.br",
-  "avatarId": "b3eae991-6ca0-4d89-bcbe-d5769f43e5e0",
+	"name": "Teste 6",
+  "phone": "1234567896",
+	"email": "teste6@teste.com.br",
+  "avatarId": "f79af8e2-6496-443f-ad06-e8df7c967989",
 	"password": "123456",
   "passwordConfirmation": "123456"  
 }
@@ -25,7 +25,7 @@ Authorization: Bearer {{authToken}}
 	"name": "Teste 1 edited",
   "phone": "0123456789",
 	"email": "edited@teste.com.br",
-  "avatarId": "13a1b363-fbf4-4d73-b9b3-bdea89a5ab89"
+  "avatarId": "56ac1682-9971-482c-a4c0-3ed099289b1d"
 }
 
 ###

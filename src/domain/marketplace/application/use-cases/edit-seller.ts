@@ -1,6 +1,5 @@
 import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
-import { Seller } from '../../enterprise/entities/user/seller'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { EmailAlreadyExistsError } from './errors/email-already-exists-error'
@@ -14,6 +13,7 @@ import { UserAttachmentsRepository } from '../repositories/user-attachments-repo
 import { UserAttachmentList } from '../../enterprise/entities/user/user-attachment-list'
 import { UserAttachment } from '../../enterprise/entities/user/user-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { UserWithAvatar } from '../../enterprise/entities/value-objects/user-with-avatar'
 
 interface EditSellerUseCaseRequest {
   sellerId: string
@@ -31,7 +31,7 @@ type EditSellerUseCaseResponse = Either<
   | ResourceNotFoundError
   | InvalidNewPasswordError,
   {
-    seller: Seller
+    seller: UserWithAvatar
   }
 >
 
@@ -85,18 +85,22 @@ export class EditSellerUseCase {
       const currentSellerAvatar =
         await this.userAttachmentsRepository.findByUserId(sellerId)
 
-      const userAttachmentList = currentSellerAvatar
-        ? new UserAttachmentList([currentSellerAvatar])
-        : new UserAttachmentList()
+      const currentSellerAvatarId = currentSellerAvatar?.id.toString()
 
-      const sellerAvatar = UserAttachment.create({
-        attachmentId: new UniqueEntityID(avatarId),
-        userId: seller.id,
-      })
+      if (currentSellerAvatarId !== avatarId) {
+        const sellerAvatar = UserAttachment.create({
+          attachmentId: new UniqueEntityID(avatarId),
+          userId: seller.id,
+        })
 
-      userAttachmentList.update([sellerAvatar])
+        const userAttachmentList = currentSellerAvatar
+          ? new UserAttachmentList([currentSellerAvatar])
+          : new UserAttachmentList()
 
-      seller.avatar = userAttachmentList
+        userAttachmentList.update([sellerAvatar])
+
+        seller.avatar = userAttachmentList
+      }
     }
 
     if (newPassword) {
@@ -126,10 +130,10 @@ export class EditSellerUseCase {
     seller.phone = phone
     seller.email = email
 
-    await this.sellersRepository.save(seller)
+    const sellerWithAvatar = await this.sellersRepository.save(seller)
 
     return right({
-      seller,
+      seller: sellerWithAvatar,
     })
   }
 }

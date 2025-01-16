@@ -38,6 +38,14 @@ describe('Register seller (E2E)', () => {
     })
 
     expect(response.statusCode).toBe(201)
+    expect(response.body).toEqual({
+      seller: expect.objectContaining({
+        name: 'John Doe',
+        avatar: expect.objectContaining({
+          id: attachment.id.toString(),
+        }),
+      }),
+    })
 
     const userOnDatabase = await prisma.user.findUnique({
       where: {
