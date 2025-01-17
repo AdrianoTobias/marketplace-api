@@ -369,6 +369,14 @@ export class InMemoryProductsRepository implements ProductsRepository {
     await this.productAttachmentsRepository.deleteMany(
       product.attachments.getRemovedItems(),
     )
+
+    const productWithDetails = await this.findDetailsById(product.id.toString())
+
+    if (!productWithDetails) {
+      throw new Error(`product not created.`)
+    }
+
+    return productWithDetails
   }
 
   async create(product: Product) {

@@ -92,8 +92,23 @@ describe('Edit Product (E2E)', () => {
         title: 'Product edited',
         description: 'Product description edited',
         priceInCents: 1000,
-        owner: user.id.toString(),
-        category: category2.id.toString(),
+        owner: expect.objectContaining({
+          id: user.id.toString(),
+          email: user.email,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category2.id.toString(),
+          title: category2.title,
+        }),
+        attachments: [
+          expect.objectContaining({
+            id: attachment1.id.toString(),
+          }),
+          expect.objectContaining({
+            id: attachment3.id.toString(),
+          }),
+        ],
       }),
     })
 

@@ -202,7 +202,7 @@ export class PrismaProductsRepository implements ProductsRepository {
     return products.map(PrismaProductDetailsMapper.toDomain)
   }
 
-  async save(product: Product): Promise<void> {
+  async save(product: Product): Promise<ProductDetails> {
     const data = PrismaProductMapper.toPrisma(product)
 
     await Promise.all([
@@ -219,6 +219,27 @@ export class PrismaProductsRepository implements ProductsRepository {
         product.attachments.getRemovedItems(),
       ),
     ])
+
+    const productWithDetails = await this.prisma.product.findUnique({
+      where: {
+        id: product.id.toString(),
+      },
+      include: {
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
+        category: true,
+        attachments: true,
+      },
+    })
+
+    if (!productWithDetails) {
+      throw new Error(`product not created.`)
+    }
+
+    return PrismaProductDetailsMapper.toDomain(productWithDetails)
   }
 
   async create(product: Product): Promise<ProductDetails> {

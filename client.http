@@ -145,7 +145,7 @@ Authorization: Bearer {{authToken}}
   "description": "Edited description",
   "priceInCents": 1234,
   "categoryId": "92b7b838-5a9b-40e7-8171-2eadbc5c6b4b",
-  "attachmentsIds": ["27bc8eff-bbaf-4454-89e9-d5f7cb166894", "606d9eab-9442-4de6-9756-5b8060e5db94"]
+  "attachmentsIds": ["6b06c1e5-76ad-456b-a2f0-3d0eb934bf7c", "e9d75b12-da43-492f-b63f-8161eadc602f"]
 }
 
 ###

@@ -11,8 +11,8 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product'
-import { ProductPresenter } from '../presenters/product-presenter'
 import { NotAllowedError } from '@/domain/marketplace/application/use-cases/errors/not-allowed-error'
+import { ProductDetailsPresenter } from '../presenters/product-details-presenter'
 
 const editProductBodySchema = z.object({
   title: z.string(),
@@ -61,6 +61,6 @@ export class EditProductController {
       }
     }
 
-    return { product: ProductPresenter.toHTTP(result.value.product) }
+    return { product: ProductDetailsPresenter.toHTTP(result.value.product) }
   }
 }

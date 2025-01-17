@@ -103,22 +103,28 @@ describe('Edit Product', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryProductsRepository.items[0]).toMatchObject({
-      title: 'Produto editado',
-      description: 'Descriação editada',
-      priceInCents: 123,
-      ownerId: seller.id,
-      categoryId: category2.id,
+    expect(result.value).toMatchObject({
+      product: expect.objectContaining({
+        title: 'Produto editado',
+        description: 'Descriação editada',
+        priceInCents: 123,
+        owner: expect.objectContaining({
+          userId: seller.id,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category2.id,
+        }),
+        attachments: [
+          expect.objectContaining({
+            id: new UniqueEntityID('1'),
+          }),
+          expect.objectContaining({
+            id: new UniqueEntityID('3'),
+          }),
+        ],
+      }),
     })
-    expect(
-      inMemoryProductsRepository.items[0].attachments.currentItems,
-    ).toHaveLength(2)
-    expect(
-      inMemoryProductsRepository.items[0].attachments.currentItems,
-    ).toEqual([
-      expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
-      expect.objectContaining({ attachmentId: new UniqueEntityID('3') }),
-    ])
   })
 
   it('should not be able to edit a product with a non-existent user', async () => {
