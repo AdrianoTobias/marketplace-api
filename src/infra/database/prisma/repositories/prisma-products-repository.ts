@@ -162,6 +162,44 @@ export class PrismaProductsRepository implements ProductsRepository {
     return products.map(PrismaProductMapper.toDomain)
   }
 
+  async findManyWithDetails({
+    page,
+    search,
+    status,
+  }: FindMany): Promise<ProductDetails[]> {
+    const perPage = 3
+
+    const products = await this.prisma.product.findMany({
+      take: perPage,
+      skip: (page - 1) * perPage,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        ...(search
+          ? {
+              OR: [
+                { title: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+        ...(status ? { status } : {}),
+      },
+      include: {
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
+        category: true,
+        attachments: true,
+      },
+    })
+
+    return products.map(PrismaProductDetailsMapper.toDomain)
+  }
+
   async save(product: Product): Promise<void> {
     const data = PrismaProductMapper.toPrisma(product)
 

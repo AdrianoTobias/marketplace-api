@@ -29,6 +29,7 @@ export abstract class ProductsRepository {
   ): Promise<ProductDetails[]>
 
   abstract findMany(params: FindMany): Promise<Product[]>
+  abstract findManyWithDetails(params: FindMany): Promise<ProductDetails[]>
   abstract save(product: Product): Promise<void>
   abstract create(product: Product): Promise<void>
 }

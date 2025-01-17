@@ -31,6 +31,7 @@ describe('Count Seller Products', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemoryUserAttachmentsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,

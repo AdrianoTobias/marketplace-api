@@ -3,8 +3,8 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchAllProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-products'
 import { ProductStatus } from '@/domain/marketplace/enterprise/entities/product'
-import { ProductPresenter } from '../presenters/product-presenter'
 import { Public } from '@/infra/auth/public'
+import { ProductDetailsPresenter } from '../presenters/product-details-presenter'
 
 const queryParamSchema = z.object({
   page: z
@@ -49,6 +49,6 @@ export class FetchAllProductsController {
 
     const products = result.value.products
 
-    return { products: products.map(ProductPresenter.toHTTP) }
+    return { products: products.map(ProductDetailsPresenter.toHTTP) }
   }
 }

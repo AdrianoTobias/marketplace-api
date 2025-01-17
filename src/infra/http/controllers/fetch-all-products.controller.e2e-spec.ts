@@ -267,7 +267,15 @@ describe('Fetch all products (E2E)', () => {
     })
     expect(response.body).toEqual({
       products: expect.arrayContaining([
-        expect.objectContaining({ title: 'Produto 03ABC' }),
+        expect.objectContaining({
+          title: 'Produto 03ABC',
+          owner: expect.objectContaining({
+            id: user.id.toString(),
+          }),
+          category: expect.objectContaining({
+            id: category.id.toString(),
+          }),
+        }),
       ]),
     })
   })

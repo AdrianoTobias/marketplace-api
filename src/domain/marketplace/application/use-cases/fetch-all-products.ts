@@ -2,6 +2,7 @@ import { Product } from '@/domain/marketplace/enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
 import { Either, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
+import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 
 interface FetchAllProductsUseCaseRequest {
   page: number
@@ -12,7 +13,7 @@ interface FetchAllProductsUseCaseRequest {
 type FetchAllProductsUseCaseResponse = Either<
   null,
   {
-    products: Product[]
+    products: ProductDetails[]
   }
 >
 
@@ -25,7 +26,7 @@ export class FetchAllProductsUseCase {
     search,
     status,
   }: FetchAllProductsUseCaseRequest): Promise<FetchAllProductsUseCaseResponse> {
-    const products = await this.productsRepository.findMany({
+    const products = await this.productsRepository.findManyWithDetails({
       page,
       search,
       status,

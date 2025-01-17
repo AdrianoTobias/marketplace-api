@@ -31,6 +31,7 @@ describe('Create Product', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemoryUserAttachmentsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,

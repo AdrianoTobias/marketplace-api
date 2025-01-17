@@ -37,6 +37,7 @@ describe('Register Product View', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemoryUserAttachmentsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,

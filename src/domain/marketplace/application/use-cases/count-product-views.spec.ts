@@ -32,6 +32,7 @@ describe('Count Product Views', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemoryUserAttachmentsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,

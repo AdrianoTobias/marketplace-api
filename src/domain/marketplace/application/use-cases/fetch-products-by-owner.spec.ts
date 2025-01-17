@@ -31,6 +31,7 @@ describe('Fetch Products by Owner', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemoryUserAttachmentsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,

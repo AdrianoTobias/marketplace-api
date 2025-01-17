@@ -33,6 +33,7 @@ describe('Change Product status', () => {
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemoryUserAttachmentsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,

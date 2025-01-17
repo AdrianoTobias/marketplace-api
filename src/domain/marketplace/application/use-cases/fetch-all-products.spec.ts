@@ -7,6 +7,8 @@ import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attac
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
+import { makeSeller } from 'test/factories/make-seller'
+import { makeCategory } from 'test/factories/make-category'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -29,6 +31,7 @@ describe('Fetch All Products', () => {
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
+      inMemoryUserAttachmentsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
@@ -37,14 +40,32 @@ describe('Fetch All Products', () => {
   })
 
   it('should be able to fetch all products', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
-      makeProduct({ createdAt: new Date(2024, 11, 20) }),
+      makeProduct({
+        ownerId: seller.id,
+        categoryId: category.id,
+        createdAt: new Date(2024, 11, 20),
+      }),
     )
     await inMemoryProductsRepository.create(
-      makeProduct({ createdAt: new Date(2024, 11, 18) }),
+      makeProduct({
+        ownerId: seller.id,
+        categoryId: category.id,
+        createdAt: new Date(2024, 11, 18),
+      }),
     )
     await inMemoryProductsRepository.create(
-      makeProduct({ createdAt: new Date(2024, 11, 23) }),
+      makeProduct({
+        ownerId: seller.id,
+        categoryId: category.id,
+        createdAt: new Date(2024, 11, 23),
+      }),
     )
 
     const result = await sut.execute({
@@ -60,8 +81,16 @@ describe('Fetch All Products', () => {
   })
 
   it('should be able to fetch paginated all products', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     for (let i = 1; i <= 22; i++) {
-      await inMemoryProductsRepository.create(makeProduct())
+      await inMemoryProductsRepository.create(
+        makeProduct({ ownerId: seller.id, categoryId: category.id }),
+      )
     }
 
     const result = await sut.execute({
@@ -73,24 +102,36 @@ describe('Fetch All Products', () => {
   })
 
   it('should be able to fetch filtered products by title or description', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
         title: 'Produto 1',
         description: 'Descrição 123',
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 20),
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
         title: 'Produto 2',
         description: 'Descrição 456',
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 18),
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
         title: 'Produto 3',
         description: 'Descrição 789',
+        categoryId: category.id,
         createdAt: new Date(2024, 11, 23),
       }),
     )
@@ -116,20 +157,32 @@ describe('Fetch All Products', () => {
   })
 
   it('should be able to fetch filtered products by status', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
+        categoryId: category.id,
         status: ProductStatus.AVAILABLE,
         createdAt: new Date(2024, 11, 20),
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
+        categoryId: category.id,
         status: ProductStatus.SOLD,
         createdAt: new Date(2024, 11, 18),
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
+        categoryId: category.id,
         status: ProductStatus.AVAILABLE,
         createdAt: new Date(2024, 11, 23),
       }),
@@ -154,26 +207,38 @@ describe('Fetch All Products', () => {
   })
 
   it('should be able to fetch filtered products by title or description and status', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
         title: 'Produto 1',
         description: 'Descrição 123',
+        categoryId: category.id,
         status: ProductStatus.AVAILABLE,
         createdAt: new Date(2024, 11, 20),
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
         title: 'Produto 2',
         description: 'Descrição 456',
+        categoryId: category.id,
         status: ProductStatus.SOLD,
         createdAt: new Date(2024, 11, 18),
       }),
     )
     await inMemoryProductsRepository.create(
       makeProduct({
+        ownerId: seller.id,
         title: 'Produto 3',
         description: 'Descrição 789',
+        categoryId: category.id,
         status: ProductStatus.CANCELLED,
         createdAt: new Date(2024, 11, 23),
       }),
@@ -190,6 +255,14 @@ describe('Fetch All Products', () => {
       expect.objectContaining({
         title: 'Produto 1',
         description: 'Descrição 123',
+        owner: expect.objectContaining({
+          userId: seller.id,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category.id,
+        }),
+        attachments: [],
         status: ProductStatus.AVAILABLE,
         createdAt: new Date(2024, 11, 20),
       }),
