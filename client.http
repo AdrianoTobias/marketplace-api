@@ -1,6 +1,8 @@
 @baseUrl = http://localhost:3333
 @authToken = {{authenticate_seller.response.body.accessToken}}
 
+###
+
 # @name register_seller
 POST {{baseUrl}}/sellers
 Content-Type: application/json
@@ -83,19 +85,8 @@ Content-Type: application/json
 
 ###
 
-# @name create_category
-POST {{baseUrl}}/categories
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "title": "Category 2"
-}
-
-###
-
-# @name fetch_all_categories
-GET {{baseUrl}}/categories
+# @name fetch_product_by_owner
+GET {{baseUrl}}/products/me?status=sold&search=3
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
@@ -119,13 +110,6 @@ Authorization: Bearer {{authToken}}
 # @name fetch_all_products
 GET {{baseUrl}}/products/?page=2
 Content-Type: application/json
-
-###
-
-# @name fetch_product_by_owner
-GET {{baseUrl}}/products/me?status=sold&search=3
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
 
 ###
 
@@ -161,6 +145,24 @@ Authorization: Bearer {{authToken}}
 POST {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea/views
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetch_all_categories
+GET {{baseUrl}}/categories
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_category
+POST {{baseUrl}}/categories
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Category 2"
+}
 
 ###
 
