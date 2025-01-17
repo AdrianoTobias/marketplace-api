@@ -4,7 +4,7 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product'
-import { ProductPresenter } from '../presenters/product-presenter'
+import { ProductDetailsPresenter } from '../presenters/product-details-presenter'
 
 const createProductBodySchema = z.object({
   title: z.string(),
@@ -44,6 +44,6 @@ export class CreateProductController {
       throw new BadRequestException()
     }
 
-    return { product: ProductPresenter.toHTTP(result.value.product) }
+    return { product: ProductDetailsPresenter.toHTTP(result.value.product) }
   }
 }

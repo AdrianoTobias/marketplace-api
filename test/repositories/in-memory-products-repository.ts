@@ -20,7 +20,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
 
   constructor(
     private productAttachmentsRepository: InMemoryProductAttachmentsRepository,
-    private inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository,
+    private userAttachmentsRepository: InMemoryUserAttachmentsRepository,
     private sellersRepository: InMemorySellersRepository,
     private categoriesRepository: InMemoryCategoriesRepository,
     private attachmentsRepository: InMemoryAttachmentsRepository,
@@ -284,10 +284,11 @@ export class InMemoryProductsRepository implements ProductsRepository {
         )
       }
 
-      const sellerAttachment =
-        this.inMemoryUserAttachmentsRepository.items.find((usertAttachment) => {
+      const sellerAttachment = this.userAttachmentsRepository.items.find(
+        (usertAttachment) => {
           return usertAttachment.userId.equals(product.id)
-        })
+        },
+      )
 
       let avatar: Attachment | null = null
 
@@ -376,5 +377,13 @@ export class InMemoryProductsRepository implements ProductsRepository {
     await this.productAttachmentsRepository.createMany(
       product.attachments.getItems(),
     )
+
+    const productWithDetails = await this.findDetailsById(product.id.toString())
+
+    if (!productWithDetails) {
+      throw new Error(`product not created.`)
+    }
+
+    return productWithDetails
   }
 }

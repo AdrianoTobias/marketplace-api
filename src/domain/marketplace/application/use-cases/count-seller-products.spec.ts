@@ -9,6 +9,7 @@ import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memor
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
+import { makeCategory } from 'test/factories/make-category'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -46,12 +47,16 @@ describe('Count Seller Products', () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     for (let i = 1; i <= 50; i++) {
       const fakerStatusAt = new Date()
       fakerStatusAt.setDate(fakerStatusAt.getDate() - i)
 
       const product = makeProduct({
         ownerId: seller.id,
+        categoryId: category.id,
         status: i % 2 === 0 ? ProductStatus.SOLD : ProductStatus.AVAILABLE,
         statusAt: fakerStatusAt,
       })
@@ -78,12 +83,16 @@ describe('Count Seller Products', () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     for (let i = 1; i <= 50; i++) {
       const fakerStatusAt = new Date()
       fakerStatusAt.setDate(fakerStatusAt.getDate() - i)
 
       const product = makeProduct({
         ownerId: seller.id,
+        categoryId: category.id,
         status: i % 2 === 0 ? ProductStatus.SOLD : ProductStatus.AVAILABLE,
         statusAt: fakerStatusAt,
       })
@@ -107,7 +116,16 @@ describe('Count Seller Products', () => {
   })
 
   it('should not be able to count products of a non-existent seller', async () => {
-    const product = makeProduct()
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    const product = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+    })
     await inMemoryProductsRepository.create(product)
 
     const result = await sut.execute({

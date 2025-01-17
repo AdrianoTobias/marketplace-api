@@ -147,7 +147,10 @@ describe('Fetch Products by Owner', () => {
 
     for (let i = 1; i <= 10; i++) {
       await inMemoryProductsRepository.create(
-        makeProduct({ ownerId: seller2.id }),
+        makeProduct({
+          ownerId: seller2.id,
+          categoryId: category.id,
+        }),
       )
     }
 
@@ -206,7 +209,10 @@ describe('Fetch Products by Owner', () => {
 
     for (let i = 1; i <= 10; i++) {
       await inMemoryProductsRepository.create(
-        makeProduct({ ownerId: seller2.id }),
+        makeProduct({
+          ownerId: seller2.id,
+          categoryId: category.id,
+        }),
       )
     }
 
@@ -268,6 +274,7 @@ describe('Fetch Products by Owner', () => {
         ownerId: seller1.id,
         title: 'Produto 3',
         description: 'Descrição 789',
+        categoryId: category.id,
         status: ProductStatus.CANCELLED,
         createdAt: new Date(2024, 11, 23),
       }),
@@ -278,7 +285,10 @@ describe('Fetch Products by Owner', () => {
 
     for (let i = 1; i <= 10; i++) {
       await inMemoryProductsRepository.create(
-        makeProduct({ ownerId: seller2.id }),
+        makeProduct({
+          ownerId: seller2.id,
+          categoryId: category.id,
+        }),
       )
     }
 

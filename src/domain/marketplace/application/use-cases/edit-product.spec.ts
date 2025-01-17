@@ -28,6 +28,7 @@ describe('Edit Product', () => {
   beforeEach(() => {
     inMemoryUserAttachmentsRepository = new InMemoryUserAttachmentsRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemorySellersRepository = new InMemorySellersRepository(
       inMemoryUserAttachmentsRepository,
       inMemoryAttachmentsRepository,
@@ -41,7 +42,6 @@ describe('Edit Product', () => {
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
     )
-    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
 
     sut = new EditProductUseCase(
       inMemorySellersRepository,
@@ -72,9 +72,16 @@ describe('Edit Product', () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
+    const category1 = makeCategory()
+    await inMemoryCategoriesRepository.create(category1)
+
+    const category2 = makeCategory()
+    await inMemoryCategoriesRepository.create(category2)
+
     const product = makeProduct(
       {
         ownerId: seller.id,
+        categoryId: category1.id,
         attachments: new ProductAttachmentList([
           productAttachmet1,
           productAttachmet2,
@@ -85,17 +92,13 @@ describe('Edit Product', () => {
 
     await inMemoryProductsRepository.create(product)
 
-    const category = makeCategory()
-
-    await inMemoryCategoriesRepository.create(category)
-
     const result = await sut.execute({
       productId: product.id.toValue(),
       ownerId: product.ownerId.toValue(),
       title: 'Produto editado',
       description: 'Descriação editada',
       priceInCents: 123,
-      categoryId: category.id.toValue(),
+      categoryId: category2.id.toValue(),
       attachmentsIds: ['1', '3'],
     })
 
@@ -105,7 +108,7 @@ describe('Edit Product', () => {
       description: 'Descriação editada',
       priceInCents: 123,
       ownerId: seller.id,
-      categoryId: category.id,
+      categoryId: category2.id,
     })
     expect(
       inMemoryProductsRepository.items[0].attachments.currentItems,
@@ -119,13 +122,17 @@ describe('Edit Product', () => {
   })
 
   it('should not be able to edit a product with a non-existent user', async () => {
-    const product = makeProduct()
-
-    await inMemoryProductsRepository.create(product)
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
 
     const category = makeCategory()
-
     await inMemoryCategoriesRepository.create(category)
+
+    const product = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+    })
+    await inMemoryProductsRepository.create(product)
 
     const result = await sut.execute({
       productId: product.id.toValue(),
@@ -143,11 +150,14 @@ describe('Edit Product', () => {
 
   it('should not be able to edit a product with a non-existent category', async () => {
     const seller = makeSeller()
-
     await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: seller.id,
+      categoryId: category.id,
     })
 
     await inMemoryProductsRepository.create(product)
@@ -168,18 +178,17 @@ describe('Edit Product', () => {
 
   it('should not be able to edit a non-existent product', async () => {
     const seller = makeSeller()
-
     await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: seller.id,
+      categoryId: category.id,
     })
 
     await inMemoryProductsRepository.create(product)
-
-    const category = makeCategory()
-
-    await inMemoryCategoriesRepository.create(category)
 
     const result = await sut.execute({
       productId: 'non-existent product',
@@ -196,19 +205,21 @@ describe('Edit Product', () => {
   })
 
   it('should not be able to edit a product from another user', async () => {
-    const seller = makeSeller({}, new UniqueEntityID('owner-1'))
+    const seller1 = makeSeller({}, new UniqueEntityID('owner-1'))
+    await inMemorySellersRepository.create(seller1)
 
-    await inMemorySellersRepository.create(seller)
+    const seller2 = makeSeller({}, new UniqueEntityID('owner-2'))
+    await inMemorySellersRepository.create(seller2)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: new UniqueEntityID('owner-2'),
+      categoryId: category.id,
     })
 
     await inMemoryProductsRepository.create(product)
-
-    const category = makeCategory()
-
-    await inMemoryCategoriesRepository.create(category)
 
     const result = await sut.execute({
       productId: product.id.toValue(),
@@ -226,19 +237,18 @@ describe('Edit Product', () => {
 
   it('should not be able to edit a sold product', async () => {
     const seller = makeSeller()
-
     await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: seller.id,
+      categoryId: category.id,
       status: ProductStatus.SOLD,
     })
 
     await inMemoryProductsRepository.create(product)
-
-    const category = makeCategory()
-
-    await inMemoryCategoriesRepository.create(category)
 
     const result = await sut.execute({
       productId: product.id.toValue(),
@@ -274,9 +284,13 @@ describe('Edit Product', () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
     const product = makeProduct(
       {
         ownerId: seller.id,
+        categoryId: category.id,
         attachments: new ProductAttachmentList([
           productAttachmet1,
           productAttachmet2,
@@ -286,10 +300,6 @@ describe('Edit Product', () => {
     )
 
     await inMemoryProductsRepository.create(product)
-
-    const category = makeCategory()
-
-    await inMemoryCategoriesRepository.create(category)
 
     const result = await sut.execute({
       productId: product.id.toValue(),

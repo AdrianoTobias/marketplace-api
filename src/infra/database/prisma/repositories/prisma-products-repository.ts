@@ -11,12 +11,14 @@ import { PrismaService } from '../prisma.service'
 import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
 import { ProductDetails } from '@/domain/marketplace/enterprise/entities/value-objects/product-details'
 import { PrismaProductDetailsMapper } from '../mappers/prisma-product-details-mapper'
+import { AttachmentsRepository } from '@/domain/marketplace/application/repositories/attachments-repository'
 
 @Injectable()
 export class PrismaProductsRepository implements ProductsRepository {
   constructor(
     private prisma: PrismaService,
     private productAttachmentsRepository: ProductAttachmentsRepository,
+    private attachmentsRepository: AttachmentsRepository,
   ) {}
 
   async count({ sellerId, from, status }: Count): Promise<number> {
@@ -219,7 +221,7 @@ export class PrismaProductsRepository implements ProductsRepository {
     ])
   }
 
-  async create(product: Product): Promise<void> {
+  async create(product: Product): Promise<ProductDetails> {
     const data = PrismaProductMapper.toPrisma(product)
 
     await this.prisma.product.create({
@@ -229,5 +231,26 @@ export class PrismaProductsRepository implements ProductsRepository {
     await this.productAttachmentsRepository.createMany(
       product.attachments.getItems(),
     )
+
+    const productWithDetails = await this.prisma.product.findUnique({
+      where: {
+        id: product.id.toString(),
+      },
+      include: {
+        owner: {
+          include: {
+            avatar: true,
+          },
+        },
+        category: true,
+        attachments: true,
+      },
+    })
+
+    if (!productWithDetails) {
+      throw new Error(`product not created.`)
+    }
+
+    return PrismaProductDetailsMapper.toDomain(productWithDetails)
   }
 }

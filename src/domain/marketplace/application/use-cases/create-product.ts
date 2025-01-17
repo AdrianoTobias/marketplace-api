@@ -9,6 +9,7 @@ import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { Injectable } from '@nestjs/common'
+import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -22,7 +23,7 @@ interface CreateProductUseCaseRequest {
 type CreateProductUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    product: Product
+    product: ProductDetails
   }
 >
 
@@ -80,10 +81,10 @@ export class CreateProductUseCase {
 
     product.attachments = new ProductAttachmentList(productAttachments)
 
-    await this.productsRepository.create(product)
+    const productWithDetails = await this.productsRepository.create(product)
 
     return right({
-      product,
+      product: productWithDetails,
     })
   }
 }

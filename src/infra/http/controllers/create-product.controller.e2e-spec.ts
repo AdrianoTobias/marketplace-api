@@ -62,8 +62,23 @@ describe('Create Product (E2E)', () => {
         description: 'Product 01 description',
         priceInCents: 1000,
         status: 'available',
-        owner: user.id.toString(),
-        category: category.id.toString(),
+        owner: expect.objectContaining({
+          id: user.id.toString(),
+          email: user.email,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category.id.toString(),
+          title: category.title,
+        }),
+        attachments: [
+          expect.objectContaining({
+            id: attachment1.id.toString(),
+          }),
+          expect.objectContaining({
+            id: attachment2.id.toString(),
+          }),
+        ],
       }),
     })
 

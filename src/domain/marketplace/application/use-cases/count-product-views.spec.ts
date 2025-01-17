@@ -9,6 +9,8 @@ import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attac
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
+import { makeSeller } from 'test/factories/make-seller'
+import { makeCategory } from 'test/factories/make-category'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -45,7 +47,16 @@ describe('Count Product Views', () => {
   })
 
   it('should be able to count the views received by the product in the last 7 days', async () => {
-    const product = makeProduct()
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    const product = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+    })
     await inMemoryProductsRepository.create(product)
 
     for (let i = 1; i <= 10; i++) {

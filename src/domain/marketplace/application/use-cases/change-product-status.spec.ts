@@ -11,6 +11,7 @@ import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memor
 import { InMemoryUserAttachmentsRepository } from 'test/repositories/in-memory-user-attachments-repository'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
+import { makeCategory } from 'test/factories/make-category'
 
 let inMemoryUserAttachmentsRepository: InMemoryUserAttachmentsRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
@@ -47,11 +48,14 @@ describe('Change Product status', () => {
 
   it('should be able to change a product status', async () => {
     const seller = makeSeller()
-
     await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: seller.id,
+      categoryId: category.id,
     })
 
     await inMemoryProductsRepository.create(product)
@@ -69,8 +73,16 @@ describe('Change Product status', () => {
   })
 
   it('should not be able to change a product status from a non-existent user', async () => {
-    const product = makeProduct()
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
 
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    const product = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+    })
     await inMemoryProductsRepository.create(product)
 
     const result = await sut.execute({
@@ -99,11 +111,18 @@ describe('Change Product status', () => {
   })
 
   it("should not be able to change the status of another user's product", async () => {
-    const seller = makeSeller({}, new UniqueEntityID('seller-1'))
-    await inMemorySellersRepository.create(seller)
+    const seller1 = makeSeller({}, new UniqueEntityID('seller-1'))
+    await inMemorySellersRepository.create(seller1)
+
+    const seller2 = makeSeller({}, new UniqueEntityID('seller-2'))
+    await inMemorySellersRepository.create(seller2)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: new UniqueEntityID('seller-2'),
+      categoryId: category.id,
     })
 
     await inMemoryProductsRepository.create(product)
@@ -120,11 +139,14 @@ describe('Change Product status', () => {
 
   it('should not be able to mark as cancelled a sold product', async () => {
     const seller = makeSeller()
-
     await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: seller.id,
+      categoryId: category.id,
       status: ProductStatus.SOLD,
     })
 
@@ -142,11 +164,14 @@ describe('Change Product status', () => {
 
   it('should not be able to mark as sold a cancelled product', async () => {
     const seller = makeSeller()
-
     await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
 
     const product = makeProduct({
       ownerId: seller.id,
+      categoryId: category.id,
       status: ProductStatus.CANCELLED,
     })
 

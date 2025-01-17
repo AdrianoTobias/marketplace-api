@@ -111,7 +111,7 @@ Authorization: Bearer {{authToken}}
   "description": "A detailed product 2 description",
   "priceInCents": 2000,
   "categoryId": "0d5e54b4-ac6d-47e6-957b-3e12af76bc34",
-  "attachmentsIds": ["27bc8eff-bbaf-4454-89e9-d5f7cb166894"]
+  "attachmentsIds": ["6062d353-7510-461c-99bd-e612806afc36", "255c7457-9c56-41a8-ab19-7eb6a3719e65"]
 }
 
 ###

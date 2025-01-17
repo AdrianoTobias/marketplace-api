@@ -27,6 +27,7 @@ describe('Create Product', () => {
       inMemoryUserAttachmentsRepository,
       inMemoryAttachmentsRepository,
     )
+    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
     inMemoryProductsRepository = new InMemoryProductsRepository(
@@ -36,7 +37,6 @@ describe('Create Product', () => {
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
     )
-    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     sut = new CreateProductUseCase(
       inMemorySellersRepository,
       inMemoryProductsRepository,
@@ -71,19 +71,24 @@ describe('Create Product', () => {
     expect(result.isRight()).toBe(true)
     expect(result.value).toMatchObject({
       product: expect.objectContaining({
-        id: inMemoryProductsRepository.items[0].id,
+        title: 'Novo produto',
+        owner: expect.objectContaining({
+          userId: seller.id,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category.id,
+        }),
+        attachments: [
+          expect.objectContaining({
+            id: new UniqueEntityID('1'),
+          }),
+          expect.objectContaining({
+            id: new UniqueEntityID('2'),
+          }),
+        ],
       }),
     })
-
-    expect(
-      inMemoryProductsRepository.items[0].attachments.currentItems,
-    ).toHaveLength(2)
-    expect(
-      inMemoryProductsRepository.items[0].attachments.currentItems,
-    ).toEqual([
-      expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
-      expect.objectContaining({ attachmentId: new UniqueEntityID('2') }),
-    ])
   })
 
   it('should not be able to create a product with a non-existent user', async () => {
