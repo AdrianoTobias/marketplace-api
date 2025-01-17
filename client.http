@@ -151,7 +151,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name change_product_status
-PATCH {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea/sold
+PATCH {{baseUrl}}/products/a2a0d302-8a04-4b7e-88da-118e4a59c3ab/sold
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 

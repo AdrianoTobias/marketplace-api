@@ -68,7 +68,17 @@ describe('Change Product status', () => {
 
     expect(result.isRight()).toBe(true)
     expect(result.value).toMatchObject({
-      product: expect.objectContaining(product),
+      product: expect.objectContaining({
+        title: product.title,
+        owner: expect.objectContaining({
+          userId: seller.id,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category.id,
+        }),
+        attachments: [],
+      }),
     })
   })
 

@@ -60,8 +60,16 @@ describe('Change Product status (E2E)', () => {
         description: product.description,
         priceInCents: product.priceInCents,
         status: newStatus,
-        owner: product.ownerId.toString(),
-        category: product.categoryId.toString(),
+        owner: expect.objectContaining({
+          id: user.id.toString(),
+          email: user.email,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category.id.toString(),
+          title: category.title,
+        }),
+        attachments: [],
       }),
     })
   })

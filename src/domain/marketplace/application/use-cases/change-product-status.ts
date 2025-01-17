@@ -1,13 +1,11 @@
-import {
-  Product,
-  ProductStatus,
-} from '@/domain/marketplace/enterprise/entities/product'
+import { ProductStatus } from '@/domain/marketplace/enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
 import { Injectable } from '@nestjs/common'
+import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 
 interface ChangeProductStatusUseCaseRequest {
   productId: string
@@ -18,7 +16,7 @@ interface ChangeProductStatusUseCaseRequest {
 type ChangeProductStatusUseCaseResponse = Either<
   ResourceNotFoundError | NotAllowedError,
   {
-    product: Product
+    product: ProductDetails
   }
 >
 
@@ -66,10 +64,10 @@ export class ChangeProductStatusUseCase {
 
     product.status = newStatus
 
-    await this.productsRepository.save(product)
+    const productWithDetails = await this.productsRepository.save(product)
 
     return right({
-      product,
+      product: productWithDetails,
     })
   }
 }

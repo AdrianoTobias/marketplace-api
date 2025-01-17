@@ -10,9 +10,9 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use-cases/change-product-status'
-import { ProductPresenter } from '../presenters/product-presenter'
 import { NotAllowedError } from '@/domain/marketplace/application/use-cases/errors/not-allowed-error'
 import { ProductStatus } from '@/domain/marketplace/enterprise/entities/product'
+import { ProductDetailsPresenter } from '../presenters/product-details-presenter'
 
 const changeProductStatusPathSchema = z.object({
   id: z.string().uuid(),
@@ -54,6 +54,6 @@ export class ChangeProductStatusController {
       }
     }
 
-    return { product: ProductPresenter.toHTTP(result.value.product) }
+    return { product: ProductDetailsPresenter.toHTTP(result.value.product) }
   }
 }
