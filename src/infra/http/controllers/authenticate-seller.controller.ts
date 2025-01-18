@@ -4,6 +4,7 @@ import {
   Controller,
   HttpCode,
   Post,
+  Res,
   UnauthorizedException,
   UsePipes,
 } from '@nestjs/common'
@@ -12,6 +13,7 @@ import { z } from 'zod'
 import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-cases/authenticate-seller'
 import { WrongCredentialsError } from '@/domain/marketplace/application/use-cases/errors/wrong-credentials-error'
 import { Public } from '@/infra/auth/public'
+import { Response } from 'express'
 
 const authenticateSellerBodySchema = z.object({
   email: z.string().email(),
@@ -28,7 +30,10 @@ export class AuthenticateSellerController {
   @Post()
   @HttpCode(200)
   @UsePipes(new ZodValidationPipe(authenticateSellerBodySchema))
-  async handle(@Body() body: AuthenticateSellerBodySchema) {
+  async handle(
+    @Body() body: AuthenticateSellerBodySchema,
+    @Res() response: Response,
+  ) {
     const { email, password } = body
 
     const result = await this.authenticateSeller.execute({
@@ -49,8 +54,14 @@ export class AuthenticateSellerController {
 
     const { accessToken } = result.value
 
-    return {
+    response.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    })
+
+    return response.json({
       accessToken,
-    }
+    })
   }
 }
