@@ -7,10 +7,11 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express'
+import { FilesInterceptor } from '@nestjs/platform-express'
+import { AttachmentPresenter } from '../presenters/attachment-presenter'
 
 @Controller('/attachments')
 export class UploadAttachmenstController {
@@ -19,9 +20,9 @@ export class UploadAttachmenstController {
   ) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FilesInterceptor('files'))
   async handle(
-    @UploadedFile(
+    @UploadedFiles(
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({
@@ -33,17 +34,20 @@ export class UploadAttachmenstController {
         ],
       }),
     )
-    file: Express.Multer.File,
+    files: Express.Multer.File[],
   ) {
-    const result = await this.uploadAndCreateAttachment.execute({
-      fileName: file.originalname,
-      fileType: file.mimetype,
-      body: file.buffer,
+    const filesToUpload = files.map((file) => {
+      return {
+        fileName: file.originalname,
+        fileType: file.mimetype,
+        body: file.buffer,
+      }
     })
+
+    const result = await this.uploadAndCreateAttachment.execute(filesToUpload)
 
     if (result.isLeft()) {
       const error = result.value
-
       switch (error.constructor) {
         case InvalidAttachmentTypeError:
           throw new BadRequestException(error.message)
@@ -51,11 +55,9 @@ export class UploadAttachmenstController {
           throw new BadRequestException(error.message)
       }
     }
-
-    const { attachment } = result.value
-
+    const { attachments } = result.value
     return {
-      attachmentId: attachment.id.toString(),
+      attachments: attachments.map(AttachmentPresenter.toHTTP),
     }
   }
 }

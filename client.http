@@ -172,7 +172,17 @@ Content-Type: multipart/form-data; boundary=boundary
 Authorization: Bearer {{authToken}}
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="sample-attachment.png"
+Content-Disposition: form-data; name="files"; filename="sample-attachment.png"
+Content-Type: image/png
+
+< ./test/e2e/sample-attachment.png
+--boundary
+Content-Disposition: form-data; name="files"; filename="sample-attachment.png"
+Content-Type: image/png
+
+< ./test/e2e/sample-attachment.png
+--boundary
+Content-Disposition: form-data; name="files"; filename="sample-attachment.png"
 Content-Type: image/png
 
 < ./test/e2e/sample-attachment.png

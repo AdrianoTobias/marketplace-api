@@ -13,7 +13,7 @@
 - [x]  Deve ser possível obter o token de autenticação
     - [x]  Não deve ser possível se autenticar com credenciais incorretas
 
-- [ ]  Deve ser possível realizar o upload de arquivos
+- [x]  Deve ser possível realizar o upload de arquivos
 
 - [x]  Deve ser possível criar e editar um Produto
     - [x]  Deve ser possível armazenar o valor do produto em centavos

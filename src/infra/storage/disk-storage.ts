@@ -17,15 +17,19 @@ export class DiskStorage implements Uploader {
     this.uploadDir = envService.get('UPLOAD_DIR')
   }
 
-  async upload({ fileName, body }: UploadParams): Promise<{ path: string }> {
-    const uploadId = randomUUID()
-    const uniqueFileName = `${uploadId}-${fileName}`
-    const filePath = join(this.uploadDir, uniqueFileName)
+  async upload(params: UploadParams[]): Promise<{ paths: string[] }> {
+    const paths = await Promise.all(
+      params.map(async (file) => {
+        const uploadId = randomUUID()
+        const uniqueFileName = `${uploadId}-${file.fileName}`
+        const filePath = join(this.uploadDir, uniqueFileName)
 
-    await fs.writeFile(filePath, body)
+        await fs.writeFile(filePath, file.body)
 
-    return {
-      path: uniqueFileName,
-    }
+        return uniqueFileName
+      }),
+    )
+
+    return { paths }
   }
 }

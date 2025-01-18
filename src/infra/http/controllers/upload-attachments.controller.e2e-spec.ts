@@ -33,11 +33,26 @@ describe('Upload attachment (E2E)', () => {
     const response = await request(app.getHttpServer())
       .post('/attachments')
       .set('Authorization', `Bearer ${accessToken}`)
-      .attach('file', './test/e2e/sample-attachment.png')
+      .attach('files', './test/e2e/sample-attachment.png')
+      .attach('files', './test/e2e/sample-attachment.png')
+      .attach('files', './test/e2e/sample-attachment.png')
 
     expect(response.statusCode).toBe(201)
     expect(response.body).toEqual({
-      attachmentId: expect.any(String),
+      attachments: [
+        expect.objectContaining({
+          id: expect.any(String),
+          url: expect.any(String),
+        }),
+        expect.objectContaining({
+          id: expect.any(String),
+          url: expect.any(String),
+        }),
+        expect.objectContaining({
+          id: expect.any(String),
+          url: expect.any(String),
+        }),
+      ],
     })
   })
 })
