@@ -11,7 +11,7 @@ import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { NotAllowedError } from '@/domain/marketplace/application/use-cases/errors/not-allowed-error'
-import { ViewPresenter } from '../presenters/view-presenter'
+import { ViewDetailsPresenter } from '../presenters/view-details-presenter'
 
 const registerProductViewPathSchema = z.object({
   id: z.string().uuid(),
@@ -51,6 +51,6 @@ export class RegisterProductViewController {
       }
     }
 
-    return ViewPresenter.toHTTP(result.value.view)
+    return ViewDetailsPresenter.toHTTP(result.value)
   }
 }

@@ -8,6 +8,8 @@ import { Injectable } from '@nestjs/common'
 import { PrismaViewMapper } from '../mappers/prisma-view-mapper'
 import { PrismaService } from '../prisma.service'
 import { Prisma } from '@prisma/client'
+import { ViewDetails } from '@/domain/marketplace/enterprise/entities/value-objects/view-details'
+import { PrismaViewDetailsMapper } from '../mappers/prisma-view-details-mapper'
 
 @Injectable()
 export class PrismaViewsRepository implements ViewsRepository {
@@ -115,6 +117,38 @@ export class PrismaViewsRepository implements ViewsRepository {
     return PrismaViewMapper.toDomain(view)
   }
 
+  async findDetailsById(id: string): Promise<ViewDetails | null> {
+    const view = await this.prisma.view.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        product: {
+          include: {
+            owner: {
+              include: {
+                avatar: true,
+              },
+            },
+            category: true,
+            attachments: true,
+          },
+        },
+        viewer: {
+          include: {
+            avatar: true,
+          },
+        },
+      },
+    })
+
+    if (!view) {
+      return null
+    }
+
+    return PrismaViewDetailsMapper.toDomain(view)
+  }
+
   async isViewed({ viewer, product }: View): Promise<boolean> {
     const view = await this.prisma.view.findUnique({
       where: {
@@ -128,13 +162,31 @@ export class PrismaViewsRepository implements ViewsRepository {
     return !!view
   }
 
-  async create(view: View): Promise<View> {
+  async create(view: View): Promise<ViewDetails> {
     const data = PrismaViewMapper.toPrisma(view)
 
-    await this.prisma.view.create({
+    const viewDetails = await this.prisma.view.create({
       data,
+      include: {
+        product: {
+          include: {
+            owner: {
+              include: {
+                avatar: true,
+              },
+            },
+            category: true,
+            attachments: true,
+          },
+        },
+        viewer: {
+          include: {
+            avatar: true,
+          },
+        },
+      },
     })
 
-    return view
+    return PrismaViewDetailsMapper.toDomain(viewDetails)
   }
 }

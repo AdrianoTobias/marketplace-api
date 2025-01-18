@@ -61,6 +61,29 @@ describe('Register Product View (E2E)', () => {
       .send()
 
     expect(response.statusCode).toBe(201)
+    expect(response.body).toEqual({
+      product: expect.objectContaining({
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents,
+        status: product.status,
+        owner: expect.objectContaining({
+          id: seller.id.toString(),
+          email: seller.email,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category.id.toString(),
+          title: category.title,
+        }),
+        attachments: [],
+      }),
+      viewer: expect.objectContaining({
+        id: viewer.id.toString(),
+        email: viewer.email,
+        avatar: null,
+      }),
+    })
 
     const viewOnDatabase = await prisma.view.findUnique({
       where: {

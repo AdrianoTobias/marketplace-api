@@ -44,8 +44,14 @@ describe('Register Product View', () => {
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
     )
-    inMemoryViewersRepository = new InMemoryViewersRepository()
-    inMemoryViewsRepository = new InMemoryViewsRepository()
+    inMemoryViewersRepository = new InMemoryViewersRepository(
+      inMemoryUserAttachmentsRepository,
+      inMemoryAttachmentsRepository,
+    )
+    inMemoryViewsRepository = new InMemoryViewsRepository(
+      inMemoryProductsRepository,
+      inMemoryViewersRepository,
+    )
     sut = new RegisterProductViewUseCase(
       inMemoryProductsRepository,
       inMemoryViewersRepository,
@@ -76,8 +82,20 @@ describe('Register Product View', () => {
 
     expect(result.isRight()).toBe(true)
     expect(result.value).toMatchObject({
-      view: expect.objectContaining({
-        id: inMemoryViewsRepository.items[0].id,
+      product: expect.objectContaining({
+        title: product.title,
+        owner: expect.objectContaining({
+          userId: seller.id,
+          avatar: null,
+        }),
+        category: expect.objectContaining({
+          id: category.id,
+        }),
+        attachments: [],
+      }),
+      viewer: expect.objectContaining({
+        userId: viewer.id,
+        avatar: null,
       }),
     })
   })

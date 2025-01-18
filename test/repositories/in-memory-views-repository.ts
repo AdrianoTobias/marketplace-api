@@ -4,9 +4,17 @@ import {
 } from '@/domain/marketplace/application/repositories/views-repository'
 import { View } from '@/domain/marketplace/enterprise/entities/view'
 import { normalizeDate } from 'test/utils/normalizeDate'
+import { InMemoryProductsRepository } from './in-memory-products-repository'
+import { InMemoryViewersRepository } from './in-memory-viewers-repository'
+import { ViewDetails } from '@/domain/marketplace/enterprise/entities/value-objects/view-details'
 
 export class InMemoryViewsRepository implements ViewsRepository {
   public items: View[] = []
+
+  constructor(
+    private productsRepository: InMemoryProductsRepository,
+    private viewersRepository: InMemoryViewersRepository,
+  ) {}
 
   async count({ sellerId, productId, from }: Count) {
     let filteredViews = this.items
@@ -79,6 +87,41 @@ export class InMemoryViewsRepository implements ViewsRepository {
     return view
   }
 
+  async findDetailsById(id: string) {
+    const view = this.items.find((item) => item.id.toString() === id)
+
+    if (!view) {
+      return null
+    }
+
+    const productWithDetails = await this.productsRepository.findDetailsById(
+      view.product.id.toString(),
+    )
+
+    if (!productWithDetails) {
+      throw new Error(
+        `product with ID "${view.product.id.toString()}" does not exist.`,
+      )
+    }
+
+    const viewerWithAvatar = await this.viewersRepository.findWithAvatarById(
+      view.viewer.id.toString(),
+    )
+
+    if (!viewerWithAvatar) {
+      throw new Error(
+        `viewer with ID "${view.product.id.toString()}" does not exist.`,
+      )
+    }
+
+    const viewDetails = ViewDetails.create({
+      product: productWithDetails,
+      viewer: viewerWithAvatar,
+    })
+
+    return viewDetails
+  }
+
   async isViewed({
     viewer: { id: viewerId },
     product: { id: productId },
@@ -93,6 +136,12 @@ export class InMemoryViewsRepository implements ViewsRepository {
   async create(view: View) {
     this.items.push(view)
 
-    return view
+    const viewDetails = await this.findDetailsById(view.id.toString())
+
+    if (!viewDetails) {
+      throw new Error(`view not created.`)
+    }
+
+    return viewDetails
   }
 }

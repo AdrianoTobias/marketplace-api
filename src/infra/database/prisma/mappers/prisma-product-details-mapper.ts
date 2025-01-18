@@ -13,7 +13,7 @@ import {
 } from './prisma-user-with-avatar-mapper'
 import { PrismaCategoryMapper } from './prisma-category-mapper'
 
-type PrismaProductDetails = PrismaProduct & {
+export type PrismaProductDetails = PrismaProduct & {
   owner: PrismaUserWithAvatar
   category: PrismaCategory
   attachments: PrismaAttachment[]

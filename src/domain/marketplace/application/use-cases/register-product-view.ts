@@ -6,6 +6,7 @@ import { Either, left, right } from '@/core/either'
 import { NotAllowedError } from './errors/not-allowed-error'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
+import { ViewDetails } from '../../enterprise/entities/value-objects/view-details'
 
 interface RegisterProductViewUseCaseRequest {
   productId: string
@@ -14,9 +15,7 @@ interface RegisterProductViewUseCaseRequest {
 
 type RegisterProductViewUseCaseResponse = Either<
   ResourceNotFoundError | NotAllowedError,
-  {
-    view: View
-  }
+  ViewDetails
 >
 
 @Injectable()
@@ -58,10 +57,8 @@ export class RegisterProductViewUseCase {
       return left(new NotAllowedError())
     }
 
-    await this.viewsRepository.create(view)
+    const viewDetails = await this.viewsRepository.create(view)
 
-    return right({
-      view,
-    })
+    return right(viewDetails)
   }
 }

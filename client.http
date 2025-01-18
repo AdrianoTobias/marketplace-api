@@ -142,7 +142,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name register_product_view
-POST {{baseUrl}}/products/3dff971c-970d-4502-944f-37414abbb6ea/views
+POST {{baseUrl}}/products/e4681f0d-d37f-4a7e-bf32-0fadbaf78853/views
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 

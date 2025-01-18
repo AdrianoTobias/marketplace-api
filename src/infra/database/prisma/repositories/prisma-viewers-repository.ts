@@ -3,6 +3,8 @@ import { Viewer } from '@/domain/marketplace/enterprise/entities/user/viewer'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaViewerMapper } from '../mappers/prisma-viewer-mapper'
+import { UserWithAvatar } from '@/domain/marketplace/enterprise/entities/value-objects/user-with-avatar'
+import { PrismaUserWithAvatarMapper } from '../mappers/prisma-user-with-avatar-mapper'
 
 @Injectable()
 export class PrismaViewersRepository implements ViewersRepository {
@@ -20,6 +22,23 @@ export class PrismaViewersRepository implements ViewersRepository {
     }
 
     return PrismaViewerMapper.toDomain(viewer)
+  }
+
+  async findWithAvatarById(id: string): Promise<UserWithAvatar | null> {
+    const viewerWithAvatar = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        avatar: true,
+      },
+    })
+
+    if (!viewerWithAvatar) {
+      return null
+    }
+
+    return PrismaUserWithAvatarMapper.toDomain(viewerWithAvatar)
   }
 
   async create(viewer: Viewer): Promise<void> {
