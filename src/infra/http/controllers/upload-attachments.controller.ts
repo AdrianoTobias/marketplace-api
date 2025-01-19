@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { AttachmentPresenter } from '../presenters/attachment-presenter'
+import { Public } from '@/infra/auth/public'
 
 @Controller('/attachments')
 export class UploadAttachmenstController {
@@ -20,6 +21,7 @@ export class UploadAttachmenstController {
   ) {}
 
   @Post()
+  @Public()
   @UseInterceptors(FilesInterceptor('files'))
   async handle(
     @UploadedFiles(

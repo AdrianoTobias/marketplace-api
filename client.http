@@ -174,7 +174,6 @@ Cookie: accessToken={{authToken}}
 # @name upload_attachments
 POST {{baseUrl}}/attachments
 Content-Type: multipart/form-data; boundary=boundary
-Cookie: accessToken={{authToken}}
 
 --boundary
 Content-Disposition: form-data; name="files"; filename="sample-attachment.png"
