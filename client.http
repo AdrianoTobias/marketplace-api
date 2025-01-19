@@ -79,9 +79,15 @@ POST {{baseUrl}}/sellers/sessions
 Content-Type: application/json
 
 {
-	"email": "edited@teste.com.br",
+	"email": "teste1@teste.com.br",
 	"password": "123456"
 }
+
+###
+
+# @name sign_out
+POST {{baseUrl}}/sign-out
+Cookie: accessToken={{authToken}}
 
 ###
 

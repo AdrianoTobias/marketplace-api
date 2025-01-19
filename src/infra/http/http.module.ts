@@ -42,6 +42,7 @@ import { StorageModule } from '../storage/storage.module'
 import { UploadAndCreateAttachmentUseCase } from '@/domain/marketplace/application/use-cases/upload-and-create-attachment'
 import { GetAttachmentContentController } from './controllers/get-attachment-content.controller'
 import { GetAttachmentContentUseCase } from '@/domain/marketplace/application/use-cases/get-attachment-content'
+import { SignOutController } from './controllers/sign-out.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -66,6 +67,7 @@ import { GetAttachmentContentUseCase } from '@/domain/marketplace/application/us
     RegisterProductViewController,
     UploadAttachmenstController,
     GetAttachmentContentController,
+    SignOutController,
   ],
   providers: [
     RegisterSellerUseCase,
