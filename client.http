@@ -186,3 +186,9 @@ Content-Type: image/png
 
 < ./test/e2e/sample-attachment.png
 --boundary--
+
+###
+
+# @name get_attachment_content
+GET {{baseUrl}}/attachments/4a606326-ddba-4c9e-ab4d-66005afa434b-sample-attachment.png
+Cookie: accessToken={{authToken}}

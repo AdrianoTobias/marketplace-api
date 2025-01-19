@@ -32,4 +32,15 @@ export class DiskStorage implements Uploader {
 
     return { paths }
   }
+
+  async get(filePath: string): Promise<string | null> {
+    try {
+      const absoluteFilePath = join(process.cwd(), this.uploadDir, filePath)
+
+      await fs.access(absoluteFilePath)
+      return absoluteFilePath
+    } catch {
+      return null
+    }
+  }
 }

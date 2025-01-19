@@ -10,6 +10,7 @@ interface Upload {
 }
 
 export class FakeUploader implements Uploader {
+  private fakeUploadDir = 'C:/test'
   public uploads: Upload[] = []
 
   async upload(params: UploadParams[]): Promise<{ paths: string[] }> {
@@ -25,5 +26,15 @@ export class FakeUploader implements Uploader {
     })
 
     return { paths }
+  }
+
+  async get(filePath: string): Promise<string | null> {
+    const file = this.uploads.find((file) => file.path === filePath)
+
+    if (!file) {
+      return null
+    }
+
+    return `${this.fakeUploadDir}/${file.path}`
   }
 }

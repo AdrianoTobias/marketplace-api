@@ -4,7 +4,7 @@ export class AttachmentPresenter {
   static toHTTP(attachment: Attachment) {
     return {
       id: attachment.id.toString(),
-      url: attachment.path,
+      url: `http://localhost:3333/attachments/${attachment.path}`,
     }
   }
 }

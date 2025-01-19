@@ -40,6 +40,8 @@ import { CountProductViewsInLast7DaysController } from './controllers/count-prod
 import { UploadAttachmenstController } from './controllers/upload-attachments.controller'
 import { StorageModule } from '../storage/storage.module'
 import { UploadAndCreateAttachmentUseCase } from '@/domain/marketplace/application/use-cases/upload-and-create-attachment'
+import { GetAttachmentContentController } from './controllers/get-attachment-content.controller'
+import { GetAttachmentContentUseCase } from '@/domain/marketplace/application/use-cases/get-attachment-content'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -63,6 +65,7 @@ import { UploadAndCreateAttachmentUseCase } from '@/domain/marketplace/applicati
     FetchAllProductsController,
     RegisterProductViewController,
     UploadAttachmenstController,
+    GetAttachmentContentController,
   ],
   providers: [
     RegisterSellerUseCase,
@@ -83,6 +86,7 @@ import { UploadAndCreateAttachmentUseCase } from '@/domain/marketplace/applicati
     AuthenticateSellerUseCase,
     RegisterProductViewUseCase,
     UploadAndCreateAttachmentUseCase,
+    GetAttachmentContentUseCase,
   ],
 })
 export class httpModule {}
