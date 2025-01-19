@@ -59,7 +59,7 @@ describe('Fetch products by owner (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/products/me')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(200)
@@ -105,7 +105,7 @@ describe('Fetch products by owner (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/products/me')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .query(queryParams)
       .send()
 
@@ -149,7 +149,7 @@ describe('Fetch products by owner (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/products/me')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .query(queryParams)
       .send()
 
@@ -195,7 +195,7 @@ describe('Fetch products by owner (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/products/me')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .query(queryParams)
       .send()
 

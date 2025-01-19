@@ -52,7 +52,7 @@ describe('Edit Seller (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .put('/sellers')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send({
         name: 'John Doe edited',
         phone: '123123123',

@@ -49,7 +49,7 @@ describe('Change Product status (E2E)', () => {
     const productId = product.id.toString()
     const response = await request(app.getHttpServer())
       .patch(`/products/${productId}/${newStatus}`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(200)

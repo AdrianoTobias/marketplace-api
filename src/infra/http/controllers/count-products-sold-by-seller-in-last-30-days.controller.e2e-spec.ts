@@ -54,7 +54,7 @@ describe('Count the number of products sold by the seller in the last 30 days (E
 
     const response = await request(app.getHttpServer())
       .get('/sellers/metrics/products/sold')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(200)

@@ -77,7 +77,7 @@ describe('Edit Product (E2E)', () => {
     const productId = product.id.toString()
     const response = await request(app.getHttpServer())
       .put(`/products/${productId}`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send({
         title: 'Product edited',
         description: 'Product description edited',

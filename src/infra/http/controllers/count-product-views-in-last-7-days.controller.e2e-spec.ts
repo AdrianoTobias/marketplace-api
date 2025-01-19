@@ -70,7 +70,7 @@ describe('Count the views received by the product in the last 7 days (E2E)', () 
 
     const response = await request(app.getHttpServer())
       .get(`/products/${product.id}/metrics/views`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(200)

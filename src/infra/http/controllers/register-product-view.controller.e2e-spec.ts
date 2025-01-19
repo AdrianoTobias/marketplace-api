@@ -57,7 +57,7 @@ describe('Register Product View (E2E)', () => {
     const productId = product.id
     const response = await request(app.getHttpServer())
       .post(`/products/${productId}/views`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(201)

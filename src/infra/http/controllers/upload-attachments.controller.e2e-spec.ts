@@ -32,7 +32,7 @@ describe('Upload attachment (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/attachments')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .attach('files', './test/e2e/sample-attachment.png')
       .attach('files', './test/e2e/sample-attachment.png')
       .attach('files', './test/e2e/sample-attachment.png')

@@ -46,7 +46,7 @@ describe('Create Product (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/products')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send({
         title: 'Product 01',
         description: 'Product 01 description',

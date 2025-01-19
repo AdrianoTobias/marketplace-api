@@ -35,7 +35,7 @@ describe('Create Category (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/categories')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send({
         title: 'Category 01',
       })

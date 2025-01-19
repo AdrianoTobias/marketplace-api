@@ -44,7 +44,7 @@ describe('Fetch categories (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/categories')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(200)

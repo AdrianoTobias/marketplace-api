@@ -70,7 +70,7 @@ describe('Count the views received by the seller in the last 30 days (E2E)', () 
 
     const response = await request(app.getHttpServer())
       .get('/sellers/metrics/views')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(200)

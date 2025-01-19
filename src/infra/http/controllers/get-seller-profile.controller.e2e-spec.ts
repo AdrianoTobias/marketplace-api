@@ -48,7 +48,7 @@ describe('Get Seller profile (E2E)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/sellers/me')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`accessToken=${accessToken}`])
       .send()
 
     expect(response.statusCode).toBe(200)
